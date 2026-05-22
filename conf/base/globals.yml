@@ -1,0 +1,10 @@
+# =============================================================================
+# SIPSA LECHE — Variables globales del período (Kedro OmegaConfLoader)
+# Referenciadas en catalog.yml con ${globals:<clave>}
+# Actualizar al inicio de cada mes junto con parameters.yml
+# =============================================================================
+
+nombre_base: "BASE032026"    # Archivo fuente sin extensión
+periodo:     "032026"        # Código MMAAAA
+mes_actual:  "MAR"           # Iniciales mes actual
+mes_anterior: "FEB"          # Iniciales mes anterior

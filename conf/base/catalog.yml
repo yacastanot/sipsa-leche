@@ -1,6 +1,7 @@
 # =============================================================================
 # SIPSA LECHE — Catálogo de datos Kedro
 # Equivalente a los LIBNAME de SAS: MUESTRA, FINCA, MUNI, DEPARTA, MACRO
+# Variables de período definidas en globals.yml y referenciadas con ${globals:clave}
 # =============================================================================
 
 # ─── ENTRADAS ─────────────────────────────────────────────────────────────────
@@ -10,7 +11,7 @@
 # IDFINCA se lee como str para evitar conversión automática a float/científica.
 base_raw_excel:
   type: pandas.ExcelDataset
-  filepath: data/01_raw/${nombre_base}.xlsx
+  filepath: data/01_raw/${globals:nombre_base}.xlsx
   load_args:
     dtype:
       IDFINCA: str
@@ -30,23 +31,23 @@ panel_persistido:
 
 finca_mes_anterior:
   type: pandas.ParquetDataset
-  filepath: data/03_primary/FINCA_${mes_anterior}.parquet
+  filepath: data/03_primary/FINCA_${globals:mes_anterior}.parquet
 
 municipio_mes_anterior:
   type: pandas.ParquetDataset
-  filepath: data/03_primary/MUNICIPIO_${mes_anterior}.parquet
+  filepath: data/03_primary/MUNICIPIO_${globals:mes_anterior}.parquet
 
 departamento_mes_anterior:
   type: pandas.ParquetDataset
-  filepath: data/03_primary/DEPARTAMENTO_${mes_anterior}.parquet
+  filepath: data/03_primary/DEPARTAMENTO_${globals:mes_anterior}.parquet
 
 macro_mes_anterior:
   type: pandas.ParquetDataset
-  filepath: data/03_primary/MACRO_${mes_anterior}.parquet
+  filepath: data/03_primary/MACRO_${globals:mes_anterior}.parquet
 
 cobertura_mes_anterior:
   type: pandas.ParquetDataset
-  filepath: data/03_primary/COB_${mes_anterior}.parquet
+  filepath: data/03_primary/COB_${globals:mes_anterior}.parquet
 
 # ─── RAW / BRONZE ─────────────────────────────────────────────────────────────
 # Snapshot inmutable del archivo fuente convertido a Parquet.
@@ -54,50 +55,50 @@ cobertura_mes_anterior:
 
 base_peri_raw:
   type: pandas.ParquetDataset
-  filepath: data/01_raw/BASE_${periodo}_raw.parquet
+  filepath: data/01_raw/BASE_${globals:periodo}_raw.parquet
 
 # ─── SILVER ───────────────────────────────────────────────────────────────────
 # Datos limpios con reglas de negocio aplicadas (IDFINCA corregido, MACRO asignada)
 
 base_peri_clean:
   type: pandas.ParquetDataset
-  filepath: data/02_intermediate/BASE_${periodo}_clean.parquet
+  filepath: data/02_intermediate/BASE_${globals:periodo}_clean.parquet
 
 # COB_{MES}: fincas válidas (V{MES}) y excluidas (NO{MES}) por municipio
 # SAS: MUESTRA.COB_MAR (libname MUESTRA '\\...\PANEL\MUESTRA')
 cobertura_mes:
   type: pandas.ParquetDataset
-  filepath: data/03_primary/COB_${mes_actual}.parquet
+  filepath: data/03_primary/COB_${globals:mes_actual}.parquet
 
 # SALEN{PERI}: fincas excluidas del cálculo (PRECIO=0 o PRODUCCION=0)
 # SAS: Work.SALEN032026
 excluidas_mes:
   type: pandas.ParquetDataset
-  filepath: data/03_primary/SALEN${periodo}.parquet
+  filepath: data/03_primary/SALEN${globals:periodo}.parquet
 
 # FINCA_{MES}: precio medio ponderado y estadísticas por finca
 # SAS: FINCA.FINCA_MAR
 finca_mes:
   type: pandas.ParquetDataset
-  filepath: data/03_primary/FINCA_${mes_actual}.parquet
+  filepath: data/03_primary/FINCA_${globals:mes_actual}.parquet
 
 # MUNICIPIO_{MES}: precio medio ponderado y estadísticas por municipio
 # SAS: MUNI.MUNICIPIO_MAR
 municipio_mes:
   type: pandas.ParquetDataset
-  filepath: data/03_primary/MUNICIPIO_${mes_actual}.parquet
+  filepath: data/03_primary/MUNICIPIO_${globals:mes_actual}.parquet
 
 # DEPARTAMENTO_{MES}: precio medio ponderado y estadísticas por departamento
 # SAS: DEPARTA.DEPARTAMENTO_MAR
 departamento_mes:
   type: pandas.ParquetDataset
-  filepath: data/03_primary/DEPARTAMENTO_${mes_actual}.parquet
+  filepath: data/03_primary/DEPARTAMENTO_${globals:mes_actual}.parquet
 
 # MACRO_{MES}: precio medio ponderado y estadísticas por macrorregión
 # SAS: MACRO.MACRO_MAR
 macro_mes:
   type: pandas.ParquetDataset
-  filepath: data/03_primary/MACRO_${mes_actual}.parquet
+  filepath: data/03_primary/MACRO_${globals:mes_actual}.parquet
 
 # ─── GOLD ─────────────────────────────────────────────────────────────────────
 # Comparaciones intermensuales y análisis avanzados
@@ -106,49 +107,49 @@ macro_mes:
 # SAS: Work.MUESTRAMAR_FEB — CORRIGE bug línea 116: MERGE COB_MAR+COB_MAR
 variacion_cobertura:
   type: pandas.ParquetDataset
-  filepath: data/04_feature/MUESTRA_${mes_actual}_${mes_anterior}.parquet
+  filepath: data/04_feature/MUESTRA_${globals:mes_actual}_${globals:mes_anterior}.parquet
 
 # Variación de precio/producción a nivel finca con TENDENCIA_PRECIO
 # SAS: Work.FINCAMAR_FEB
 variacion_finca:
   type: pandas.ParquetDataset
-  filepath: data/04_feature/FINCA_${mes_actual}_${mes_anterior}.parquet
+  filepath: data/04_feature/FINCA_${globals:mes_actual}_${globals:mes_anterior}.parquet
 
 # Variación a nivel municipio
 # SAS: Work.MUNIMAR_FEB
 variacion_municipio:
   type: pandas.ParquetDataset
-  filepath: data/04_feature/MUNICIPIO_${mes_actual}_${mes_anterior}.parquet
+  filepath: data/04_feature/MUNICIPIO_${globals:mes_actual}_${globals:mes_anterior}.parquet
 
 # Variación a nivel departamento (umbral ±3% para tendencia)
 # SAS: Work.DEPMAR_FEB
 variacion_departamento:
   type: pandas.ParquetDataset
-  filepath: data/04_feature/DEP_${mes_actual}_${mes_anterior}.parquet
+  filepath: data/04_feature/DEP_${globals:mes_actual}_${globals:mes_anterior}.parquet
 
 # Variación a nivel macrorregión (umbral ±3% para tendencia)
 # SAS: Work.MACROMARFEB
 variacion_macro:
   type: pandas.ParquetDataset
-  filepath: data/04_feature/MACRO_${mes_actual}_${mes_anterior}.parquet
+  filepath: data/04_feature/MACRO_${globals:mes_actual}_${globals:mes_anterior}.parquet
 
 # Correlación precio vs producción y precio vs venta — municipio
 # SAS: Work.CORMUNI_MAR
 correlacion_municipio:
   type: pandas.ParquetDataset
-  filepath: data/04_feature/CORMUNI_${mes_actual}.parquet
+  filepath: data/04_feature/CORMUNI_${globals:mes_actual}.parquet
 
 # Correlación precio vs producción y precio vs venta — departamento
 # SAS: Work.CORDEP_MAR (nota: SAS tenía typo 'PROCIOPROD' → corregido a 'PRECIOPROD')
 correlacion_departamento:
   type: pandas.ParquetDataset
-  filepath: data/04_feature/CORDEP_${mes_actual}.parquet
+  filepath: data/04_feature/CORDEP_${globals:mes_actual}.parquet
 
 # Panel trimestral actualizado con el mes actual
 # SAS: FINCA.PANEL (actualizado in-place) + PROC TABULATE resultado
 panel_actualizado:
   type: pandas.ParquetDataset
-  filepath: data/04_feature/PANEL_${mes_actual}.parquet
+  filepath: data/04_feature/PANEL_${globals:mes_actual}.parquet
 
 # ─── REPORTES XLSX (capa de consumo) ─────────────────────────────────────────
 # SAS: %MACRO EXPORT → PROC EXPORT DBMS=XLSX
@@ -157,50 +158,50 @@ panel_actualizado:
 # SAS: \\DIMPE-D-065\...\SALIDAS\CUADROS_032026_TOT.xls
 cuadros_tot_finca:
   type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${periodo}_TOT.xlsx
+  filepath: data/08_reporting/CUADROS_${globals:periodo}_TOT.xlsx
   save_args:
     sheet_name: "FINCA"
 
 cuadros_tot_municipio:
   type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${periodo}_TOT.xlsx
+  filepath: data/08_reporting/CUADROS_${globals:periodo}_TOT.xlsx
   save_args:
     sheet_name: "MUNICIPIO"
 
 cuadros_tot_departamento:
   type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${periodo}_TOT.xlsx
+  filepath: data/08_reporting/CUADROS_${globals:periodo}_TOT.xlsx
   save_args:
     sheet_name: "DEPARTAMENTO"
 
 cuadros_tot_macro:
   type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${periodo}_TOT.xlsx
+  filepath: data/08_reporting/CUADROS_${globals:periodo}_TOT.xlsx
   save_args:
     sheet_name: "MACROREGION"
 
 cuadros_tot_cobertura:
   type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${periodo}_TOT.xlsx
+  filepath: data/08_reporting/CUADROS_${globals:periodo}_TOT.xlsx
   save_args:
     sheet_name: "COB"
 
 # CUADROS_{PERI}.xlsx — versión resumida para publicación
 cuadros_municipio:
   type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${periodo}.xlsx
+  filepath: data/08_reporting/CUADROS_${globals:periodo}.xlsx
   save_args:
     sheet_name: "MUNICIPIO"
 
 cuadros_departamento:
   type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${periodo}.xlsx
+  filepath: data/08_reporting/CUADROS_${globals:periodo}.xlsx
   save_args:
     sheet_name: "DEPARTAMENTO"
 
 cuadros_macro:
   type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${periodo}.xlsx
+  filepath: data/08_reporting/CUADROS_${globals:periodo}.xlsx
   save_args:
     sheet_name: "MACROREGION"
 
