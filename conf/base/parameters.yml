@@ -1,0 +1,111 @@
+# =============================================================================
+# SIPSA LECHE — Parámetros de ejecución mensual
+# Equivalente a los %LET de SAS en MARZO_2026.sas
+# =============================================================================
+# INSTRUCCIONES: Actualizar las 6 variables de período al inicio de cada mes.
+# El resto de parámetros son estables y solo cambian por ajuste metodológico.
+
+# ─── PARÁMETROS DE PERÍODO ────────────────────────────────────────────────────
+# SAS equivalente:
+#   %LET PERI    = 032026;
+#   %LET INI_MES = MAR;
+#   %LET ANT_MES = FEB;
+#   %LET MES     = MARZO 2026;
+#   %LET BASE    = BASE032026;
+
+periodo: "032026"               # Código MMAAAA del período actual
+mes_actual: "MAR"               # Iniciales del mes actual (sufijo en tablas)
+mes_anterior: "FEB"             # Iniciales del mes anterior
+mes_largo: "MARZO 2026"         # Nombre completo para rutas de carpetas
+mes_largo_anterior: "FEBRERO 2026"
+nombre_base: "BASE032026"       # Nombre del archivo Excel de entrada (sin .xlsx)
+
+# ─── RUTAS DEL SERVIDOR DIMPE-D-065 ─────────────────────────────────────────
+# SAS: libname MUESTRA '\\DIMPE-D-065\DIMPE\SIPSA\LECHE\2013\PANEL\MUESTRA'
+servidor_dimpe: "\\\\DIMPE-D-065\\DIMPE\\SIPSA\\LECHE\\2013"
+ruta_panel: "\\\\DIMPE-D-065\\DIMPE\\SIPSA\\LECHE\\2013\\PANEL"
+
+# ─── UMBRALES DE TENDENCIA DEL PRECIO ────────────────────────────────────────
+# Fuente: MARZO_2026.sas líneas 129-191
+# Finca/Municipio → umbral leve ±5%  (líneas 129-135)
+# Depto/Macro     → umbral leve ±3%  (líneas 164-170)
+
+tendencia_umbral_finca_muni:
+  bajo_extremo: -0.12     # < -12%     → "xxx"
+  bajo_fuerte:  -0.07     # < -7%      → "xx"
+  bajo_leve:    -0.05     # < -5%      → "x"
+  estable_sup:   0.05     # [-5%,+5%]  → "="
+  alto_leve:     0.07     # [+5%,+7%)  → "↑"
+  alto_fuerte:   0.12     # [+7%,+12%) → "↑↑"
+                          # >= +12%    → "↑↑↑"
+
+tendencia_umbral_dep_macro:
+  bajo_extremo: -0.12
+  bajo_fuerte:  -0.07
+  bajo_leve:    -0.03     # Umbral más estricto que finca/muni
+  estable_sup:   0.03
+  alto_leve:     0.07
+  alto_fuerte:   0.12
+
+# ─── CORRECCIONES DE IDFINCA ─────────────────────────────────────────────────
+# Fuente: MARZO_2026.sas líneas 63-77
+# Parametrizadas para actualizar sin modificar código fuente.
+# Caso especial: "07.69E7" es notación científica generada por Excel.
+
+idfinca_corrections:
+  - wrong: "0508301"
+    municipio: "Belmira"
+    correct: "0508601"
+  - wrong: "0515402"
+    municipio: "El Carmen De Viboral"
+    correct: "0514802"
+  - wrong: "0086312"
+    municipio: "Sabanalarga"
+    correct: "0863812"
+  - wrong: "1756319"
+    municipio: "Salamina"
+    correct: "1765319"
+  - wrong: "1756312"
+    municipio: "Salamina"
+    correct: "1765312"
+  - wrong: "2562905"
+    municipio: "Facatativa"
+    correct: "2526905"
+  - wrong: "6919018"
+    municipio: "Cimitarra"
+    correct: "6819018"
+  - wrong: "07.69E7"
+    municipio: "Zarzal"
+    correct: "7689510"
+  - wrong: "76895010"
+    municipio: "Zarzal"
+    correct: "7689510"
+  - wrong: "76895011"
+    municipio: "Zarzal"
+    correct: "7689511"
+  - wrong: "7636510"
+    municipio: "Jamundí"
+    correct: "7636410"
+  - wrong: "0475515"
+    municipio: "Plato"
+    correct: "4755515"
+  - wrong: "0475516"
+    municipio: "Plato"
+    correct: "4755516"
+  - wrong: "0475517"
+    municipio: "Plato"
+    correct: "4755517"
+
+# ─── MACRORREGIONES LECHERAS ──────────────────────────────────────────────────
+# Fuente: MACRO LECHE.sas líneas 61-70 (%MACRO VALIDACION)
+# Nota: "CAUCA,NARIÑO Y VALLE DEL CAUCA " lleva espacio al final — respetar.
+
+macroregiones:
+  "CAUCA,NARIÑO Y VALLE DEL CAUCA ": ["19", "52", "76", "86"]
+  "ZONA CAFETERA":                    ["05", "17", "63", "66"]
+  "BOYACA Y CUNDINAMARCA":            ["15", "25"]
+  "COSTA ATLANTICA":                  ["08", "13", "20", "23", "44", "47", "70"]
+  "RESTO":                            ["85", "41", "50", "54", "68", "73", "18", "81"]
+
+# ─── TOLERANCIA PARA PRUEBAS DE REGRESIÓN ────────────────────────────────────
+regresion_tolerancia: 0.0001   # Diferencia máxima aceptable vs salidas SAS
