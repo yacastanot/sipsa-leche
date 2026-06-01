@@ -34,13 +34,36 @@ class MunicipioMesSchema(pa.DataFrameModel):
         strict = False
 
 
-class CoberturaSchema(pa.DataFrameModel):
-    """Schema de COB_{MES}.parquet — cobertura por municipio."""
+class ExcluidasSchema(pa.DataFrameModel):
+    """Schema de SALEN{PERI}.parquet — una fila por finca excluida del cálculo.
 
-    DEPARTAMENTO: Series[str]
-    MUNICIPIO: Series[str]
+    SAS: tabla SALEN{PERI} generada en %VALIDACION (MACRO LECHE.sas líneas 81-87).
+    Las columnas dinámicas SALEN{MES} y observaciones{MES} no se validan aquí
+    porque su nombre depende del período (strict=False las ignora).
+    """
+
+    IDFINCA: Series[str] = pa.Field(str_matches=r"^\d{7}$", nullable=False)
+    DEPARTAMENTO: Series[str] = pa.Field(nullable=False)
+    COD_MUNI: Series[str] = pa.Field(str_matches=r"^\d{5}$", nullable=False)
+    MUNICIPIO: Series[str] = pa.Field(nullable=False)
     IDDEPMUNI: Series[str] = pa.Field(nullable=False)
-    COD_MUNI: Series[str] = pa.Field(str_matches=r"^\d{5}$")
+    FINCA: Series[str] = pa.Field(nullable=False)
+
+    class Config:
+        strict = False
+
+
+class CoberturaSchema(pa.DataFrameModel):
+    """Schema de COB_{MES}.parquet — cobertura por municipio.
+
+    SAS: tabla COB_{MES} = MERGE VALIDOS SALENN BY IDDEPMUNI.
+    Las columnas V{MES} y NO{MES} son dinámicas (strict=False las ignora).
+    """
+
+    DEPARTAMENTO: Series[str] = pa.Field(nullable=False)
+    COD_MUNI: Series[str] = pa.Field(str_matches=r"^\d{5}$", nullable=False)
+    MUNICIPIO: Series[str] = pa.Field(nullable=False)
+    IDDEPMUNI: Series[str] = pa.Field(nullable=False)
 
     class Config:
         strict = False

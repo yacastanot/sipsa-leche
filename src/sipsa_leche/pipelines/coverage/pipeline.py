@@ -1,20 +1,37 @@
-"""Pipeline coverage — SIPSA Leche.
+"""Pipeline coverage — M3: Cobertura y fincas excluidas del cálculo.
 
-Pendiente de implementación. Módulo correspondiente según cronograma:
-  ingestion / cleaning         → M2: Lectura y depuración de la encuesta
-  coverage                     → M3: Cobertura y fincas excluidas
-  farm_price                   → M4: Precio mensual por finca
-  municipality_price           → M5: Precio medio por municipio
-  dept_macro_price             → M6: Precio por departamento y macrorregión
-  monthly_variation            → M7: Variación mensual precio y producción
-  correlation                  → M8: Correlación precio vs producción/venta
-  panel                        → M9: Panel trimestral de fincas
-  outputs                      → M10: Cuadros de salida para publicación
+DAG:
+    base_peri_clean ──► [calcular_cobertura] ──► excluidas_mes
+         ▲                                   └──► cobertura_mes
+    params:mes_actual
+                        excluidas_mes ──► [exportar_excluidas_xlsx] ──► excluidas_xlsx
 """
 from __future__ import annotations
 
-from kedro.pipeline import Pipeline, pipeline
+from kedro.pipeline import Pipeline, node, pipeline
+
+from sipsa_leche.pipelines.coverage.nodes import (
+    calcular_cobertura,
+    exportar_excluidas_xlsx,
+)
 
 
 def create_pipeline(**kwargs) -> Pipeline:
-    return pipeline([])
+    return pipeline(
+        [
+            node(
+                func=calcular_cobertura,
+                inputs=["base_peri_clean", "params:mes_actual"],
+                outputs=["excluidas_mes", "cobertura_mes"],
+                name="calcular_cobertura",
+                tags=["m3", "coverage", "silver"],
+            ),
+            node(
+                func=exportar_excluidas_xlsx,
+                inputs="excluidas_mes",
+                outputs="excluidas_xlsx",
+                name="exportar_excluidas_xlsx",
+                tags=["m3", "coverage", "reporting"],
+            ),
+        ]
+    )
