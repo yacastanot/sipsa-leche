@@ -1,20 +1,32 @@
-"""Pipeline panel — SIPSA Leche.
+"""Pipeline panel - M9: panel trimestral de fincas lecheras.
 
-Pendiente de implementación. Módulo correspondiente según cronograma:
-  ingestion / cleaning         → M2: Lectura y depuración de la encuesta
-  coverage                     → M3: Cobertura y fincas excluidas
-  farm_price                   → M4: Precio mensual por finca
-  municipality_price           → M5: Precio medio por municipio
-  dept_macro_price             → M6: Precio por departamento y macrorregión
-  monthly_variation            → M7: Variación mensual precio y producción
-  correlation                  → M8: Correlación precio vs producción/venta
-  panel                        → M9: Panel trimestral de fincas
-  outputs                      → M10: Cuadros de salida para publicación
+DAG:
+    panel_persistido + finca_mes
+        -> [construir_panel_trimestral]
+        -> panel_actualizado + panel_total
 """
 from __future__ import annotations
 
-from kedro.pipeline import Pipeline, pipeline
+from kedro.pipeline import Pipeline, node, pipeline
+
+from sipsa_leche.pipelines.panel.nodes import construir_panel_trimestral
 
 
 def create_pipeline(**kwargs) -> Pipeline:
-    return pipeline([])
+    return pipeline(
+        [
+            node(
+                func=construir_panel_trimestral,
+                inputs=[
+                    "panel_persistido",
+                    "finca_mes",
+                    "params:mes_actual",
+                    "params:mes_anterior",
+                    "params:panel_ajuste",
+                ],
+                outputs=["panel_actualizado", "panel_total"],
+                name="construir_panel_trimestral",
+                tags=["m9", "panel", "gold"],
+            ),
+        ]
+    )
