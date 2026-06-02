@@ -1,20 +1,94 @@
-"""Pipeline monthly_variation — SIPSA Leche.
+"""Pipeline monthly_variation — M7: Variación mensual del precio y la producción de leche.
 
-Pendiente de implementación. Módulo correspondiente según cronograma:
-  ingestion / cleaning         → M2: Lectura y depuración de la encuesta
-  coverage                     → M3: Cobertura y fincas excluidas
-  farm_price                   → M4: Precio mensual por finca
-  municipality_price           → M5: Precio medio por municipio
-  dept_macro_price             → M6: Precio por departamento y macrorregión
-  monthly_variation            → M7: Variación mensual precio y producción
-  correlation                  → M8: Correlación precio vs producción/venta
-  panel                        → M9: Panel trimestral de fincas
-  outputs                      → M10: Cuadros de salida para publicación
+DAG:
+    cobertura_mes + cobertura_mes_anterior  → [var_cobertura]   → variacion_cobertura
+    finca_mes    + finca_mes_anterior       → [var_finca]       → variacion_finca
+    municipio_mes + municipio_mes_anterior  → [var_municipio]   → variacion_municipio
+    departamento_mes + dep_mes_anterior     → [var_departamento]→ variacion_departamento
+    macro_mes   + macro_mes_anterior        → [var_macro]       → variacion_macro
+
+Todos los nodos leen también params:mes_actual, params:mes_anterior y
+params:tendencia_umbral_finca_muni / params:tendencia_umbral_dep_macro.
 """
 from __future__ import annotations
 
-from kedro.pipeline import Pipeline, pipeline
+from kedro.pipeline import Pipeline, node, pipeline
+
+from sipsa_leche.pipelines.monthly_variation.nodes import (
+    calcular_variacion_cobertura,
+    calcular_variacion_departamento,
+    calcular_variacion_finca,
+    calcular_variacion_macro,
+    calcular_variacion_municipio,
+)
 
 
 def create_pipeline(**kwargs) -> Pipeline:
-    return pipeline([])
+    return pipeline(
+        [
+            node(
+                func=calcular_variacion_cobertura,
+                inputs=[
+                    "cobertura_mes",
+                    "cobertura_mes_anterior",
+                    "params:mes_actual",
+                    "params:mes_anterior",
+                ],
+                outputs="variacion_cobertura",
+                name="calcular_variacion_cobertura",
+                tags=["m7", "variation", "gold"],
+            ),
+            node(
+                func=calcular_variacion_finca,
+                inputs=[
+                    "finca_mes",
+                    "finca_mes_anterior",
+                    "params:mes_actual",
+                    "params:mes_anterior",
+                    "params:tendencia_umbral_finca_muni",
+                ],
+                outputs="variacion_finca",
+                name="calcular_variacion_finca",
+                tags=["m7", "variation", "gold"],
+            ),
+            node(
+                func=calcular_variacion_municipio,
+                inputs=[
+                    "municipio_mes",
+                    "municipio_mes_anterior",
+                    "params:mes_actual",
+                    "params:mes_anterior",
+                    "params:tendencia_umbral_finca_muni",
+                ],
+                outputs="variacion_municipio",
+                name="calcular_variacion_municipio",
+                tags=["m7", "variation", "gold"],
+            ),
+            node(
+                func=calcular_variacion_departamento,
+                inputs=[
+                    "departamento_mes",
+                    "departamento_mes_anterior",
+                    "params:mes_actual",
+                    "params:mes_anterior",
+                    "params:tendencia_umbral_dep_macro",
+                ],
+                outputs="variacion_departamento",
+                name="calcular_variacion_departamento",
+                tags=["m7", "variation", "gold"],
+            ),
+            node(
+                func=calcular_variacion_macro,
+                inputs=[
+                    "macro_mes",
+                    "macro_mes_anterior",
+                    "params:mes_actual",
+                    "params:mes_anterior",
+                    "params:tendencia_umbral_dep_macro",
+                ],
+                outputs="variacion_macro",
+                name="calcular_variacion_macro",
+                tags=["m7", "variation", "gold"],
+            ),
+        ]
+    )
