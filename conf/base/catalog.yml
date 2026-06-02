@@ -151,6 +151,11 @@ panel_actualizado:
   type: pandas.ParquetDataset
   filepath: data/04_feature/PANEL_${globals:mes_actual}.parquet
 
+# TOTAL del panel trimestral (equivalente al PROC TABULATE OUT=&TOTAL)
+panel_total:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/PANEL_TOTAL_${globals:mes_actual}.parquet
+
 # ─── REPORTES XLSX (capa de consumo) ─────────────────────────────────────────
 # SAS: %MACRO EXPORT → PROC EXPORT DBMS=XLSX
 
@@ -211,6 +216,11 @@ cobertura_xlsx:
   filepath: data/08_reporting/COBERTURA.xlsx
   save_args:
     sheet_name: "COB"
+
+# Registro de ejecución de M10 (trazabilidad del proceso de exportación)
+cuadros_log:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/cuadros_log.parquet
 
 # Excluidas_leche.xlsx — fincas excluidas del cálculo con observaciones
 excluidas_xlsx:
