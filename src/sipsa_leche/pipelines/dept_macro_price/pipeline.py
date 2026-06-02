@@ -1,20 +1,39 @@
-"""Pipeline dept_macro_price — SIPSA Leche.
+"""Pipeline dept_macro_price — M6: Precio por departamento y macrorregión lechera.
 
-Pendiente de implementación. Módulo correspondiente según cronograma:
-  ingestion / cleaning         → M2: Lectura y depuración de la encuesta
-  coverage                     → M3: Cobertura y fincas excluidas
-  farm_price                   → M4: Precio mensual por finca
-  municipality_price           → M5: Precio medio por municipio
-  dept_macro_price             → M6: Precio por departamento y macrorregión
-  monthly_variation            → M7: Variación mensual precio y producción
-  correlation                  → M8: Correlación precio vs producción/venta
-  panel                        → M9: Panel trimestral de fincas
-  outputs                      → M10: Cuadros de salida para publicación
+DAG:
+    base_peri_clean ──► [calcular_precio_departamento] ──► departamento_mes
+         ▲
+    params:mes_actual
+    base_peri_clean ──► [calcular_precio_macro]         ──► macro_mes
+         ▲
+    params:mes_actual
 """
 from __future__ import annotations
 
-from kedro.pipeline import Pipeline, pipeline
+from kedro.pipeline import Pipeline, node, pipeline
+
+from sipsa_leche.pipelines.dept_macro_price.nodes import (
+    calcular_precio_departamento,
+    calcular_precio_macro,
+)
 
 
 def create_pipeline(**kwargs) -> Pipeline:
-    return pipeline([])
+    return pipeline(
+        [
+            node(
+                func=calcular_precio_departamento,
+                inputs=["base_peri_clean", "params:mes_actual"],
+                outputs="departamento_mes",
+                name="calcular_precio_departamento",
+                tags=["m6", "dept_price", "silver"],
+            ),
+            node(
+                func=calcular_precio_macro,
+                inputs=["base_peri_clean", "params:mes_actual"],
+                outputs="macro_mes",
+                name="calcular_precio_macro",
+                tags=["m6", "macro_price", "silver"],
+            ),
+        ]
+    )
