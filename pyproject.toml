@@ -87,3 +87,6 @@ warn_unused_configs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--cov=sipsa_leche --cov-report=term-missing -v"
+markers = [
+    "regression: tests de regresión numérica contra outputs SAS de referencia",
+]

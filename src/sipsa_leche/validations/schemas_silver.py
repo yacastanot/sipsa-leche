@@ -6,16 +6,20 @@ from pandera.typing import Series
 
 
 class FincaMesSchema(pa.DataFrameModel):
-    """Schema de FINCA_{MES}.parquet — una fila por IDFINCA."""
+    """Schema de FINCA_{MES}.parquet — una fila por finca válida.
 
-    IDFINCA: Series[str] = pa.Field(str_matches=r"^\d{7}$")
+    SAS: tabla FINCA_{MES} generada en %CUADROS (MACRO LECHE.sas líneas 211-217).
+    Las columnas dinámicas T_VACAS_{MES}, T_PROD_{MES}, MED_FINCA_{MES}, etc.
+    no se validan aquí porque su nombre depende del período (strict=False las ignora).
+    """
+
+    IDFINCA: Series[str] = pa.Field(str_matches=r"^\d{7}$", nullable=False)
     IDFINCA_AUX: Series[str] = pa.Field(nullable=False)
-    DEPARTAMENTO: Series[str]
-    MUNICIPIO: Series[str]
-    FINCA: Series[str]
+    DEPARTAMENTO: Series[str] = pa.Field(nullable=False)
+    MUNICIPIO: Series[str] = pa.Field(nullable=False)
+    FINCA: Series[str] = pa.Field(nullable=False)
     COD_DEP: Series[str] = pa.Field(str_matches=r"^\d{2}$")
     COD_MUNI: Series[str] = pa.Field(str_matches=r"^\d{5}$")
-    MACRO: Series[str] = pa.Field(nullable=True)
 
     class Config:
         strict = False

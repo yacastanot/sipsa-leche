@@ -1,20 +1,26 @@
-"""Pipeline farm_price — SIPSA Leche.
+"""Pipeline farm_price — M4: Precio mensual del litro de leche por finca.
 
-Pendiente de implementación. Módulo correspondiente según cronograma:
-  ingestion / cleaning         → M2: Lectura y depuración de la encuesta
-  coverage                     → M3: Cobertura y fincas excluidas
-  farm_price                   → M4: Precio mensual por finca
-  municipality_price           → M5: Precio medio por municipio
-  dept_macro_price             → M6: Precio por departamento y macrorregión
-  monthly_variation            → M7: Variación mensual precio y producción
-  correlation                  → M8: Correlación precio vs producción/venta
-  panel                        → M9: Panel trimestral de fincas
-  outputs                      → M10: Cuadros de salida para publicación
+DAG:
+    base_peri_clean ──► [calcular_precio_finca] ──► finca_mes
+         ▲
+    params:mes_actual
 """
 from __future__ import annotations
 
-from kedro.pipeline import Pipeline, pipeline
+from kedro.pipeline import Pipeline, node, pipeline
+
+from sipsa_leche.pipelines.farm_price.nodes import calcular_precio_finca
 
 
 def create_pipeline(**kwargs) -> Pipeline:
-    return pipeline([])
+    return pipeline(
+        [
+            node(
+                func=calcular_precio_finca,
+                inputs=["base_peri_clean", "params:mes_actual"],
+                outputs="finca_mes",
+                name="calcular_precio_finca",
+                tags=["m4", "farm_price", "silver"],
+            ),
+        ]
+    )
