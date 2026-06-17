@@ -6,8 +6,8 @@
 Entrada: data/01_raw/BASE{MMYYYY}.xlsx
          data/03_primary/PANEL.parquet         (panel trimestral del mes anterior)
          conf/base/parameters.yml              (umbrales, macroregiones, correcciones)
-         OneDrive/Excluidas_leche.xlsx         (plantilla base M11 — solo lectura)
-         OneDrive/LECHE_CRUDA_EST_BASE.xlsx    (plantilla base M11 — solo lectura)
+         data/01_raw/Excluidas_leche.xlsx      (plantilla base M11 — solo lectura)
+         data/01_raw/LECHE_CRUDA_EST_BASE.xlsx (plantilla base M11 — solo lectura)
 
          │
          ▼

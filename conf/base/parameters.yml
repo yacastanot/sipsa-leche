@@ -38,10 +38,10 @@ panel_ajuste:
 
 
 # ─── RUTAS CUENTAS NACIONALES (M11) ──────────────────────────────────────────
-# Archivos base en OneDrive que el pipeline usa como plantilla de solo lectura.
+# Archivos base en data/01_raw/ que el pipeline usa como plantilla de solo lectura.
 # Las salidas mensuales se guardan en data/08_reporting/.
-ruta_excluidas: "C:/Users/Jeferson/OneDrive - Cloud Integration Hub/Documentos/DANE Automatización/SIPSA Leche/Excluidas_leche.xlsx"
-ruta_leche_cruda_base: "C:/Users/Jeferson/OneDrive - Cloud Integration Hub/Documentos/DANE Automatización/SIPSA Leche/LECHE_CRUDA_EST_BASE.xlsx"
+ruta_excluidas: "data/01_raw/Excluidas_leche.xlsx"
+ruta_leche_cruda_base: "data/01_raw/LECHE_CRUDA_EST_BASE.xlsx"
 
 # ─── UMBRALES DE TENDENCIA DEL PRECIO ────────────────────────────────────────
 # Fuente: MARZO_2026.sas líneas 129-191

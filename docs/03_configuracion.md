@@ -62,25 +62,15 @@ Finca/Municipio usa ±5% como estable; Depto/Macro usa ±3% (más estricto).
 
 ### Rutas Cuentas Nacionales — M11
 
-Rutas a los archivos base en OneDrive que M11 usa como plantilla de solo lectura.
+Archivos base que M11 usa como plantilla de solo lectura, ubicados en `data/01_raw/`.
 El pipeline **no modifica estos archivos**; genera copias del período en `data/08_reporting/`.
 
-| Variable | Descripción |
-|---|---|
-| `ruta_excluidas` | Ruta absoluta a `Excluidas_leche.xlsx` (OneDrive) |
-| `ruta_leche_cruda_base` | Ruta absoluta a `LECHE_CRUDA_EST_BASE.xlsx` (OneDrive) |
+| Variable | Valor por defecto | Descripción |
+|---|---|---|
+| `ruta_excluidas` | `data/01_raw/Excluidas_leche.xlsx` | Plantilla del panel de fincas atípicas |
+| `ruta_leche_cruda_base` | `data/01_raw/LECHE_CRUDA_EST_BASE.xlsx` | Plantilla del histórico de leche cruda |
 
-Ejemplo en `parameters.yml`:
-
-```yaml
-ruta_excluidas: "C:/Users/Jeferson/OneDrive - Cloud Integration Hub/Documentos/DANE
-  Automatización/SIPSA Leche/Excluidas_leche.xlsx"
-ruta_leche_cruda_base: "C:/Users/Jeferson/OneDrive - Cloud Integration Hub/Documentos/DANE
-  Automatización/SIPSA Leche/LECHE_CRUDA_EST_BASE.xlsx"
-```
-
-> Estas rutas son específicas de la máquina del analista. Actualizar si la carpeta
-> de OneDrive está en una ruta distinta.
+> Copiar estos archivos a `data/01_raw/` antes de ejecutar M11 por primera vez.
 
 ---
 
