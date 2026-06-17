@@ -239,6 +239,11 @@ cuadros_log:
   type: pandas.ParquetDataset
   filepath: data/08_reporting/cuadros_log.parquet
 
+# Duplicados de IDFINCA_AUX detectados por verificar_duplicados_finca (vacío si no hay)
+duplicados_finca:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/DUPLICADOS_IDFINCA_${globals:periodo}.parquet
+
 # Excluidas_leche.xlsx — fincas excluidas del cálculo con observaciones
 excluidas_xlsx:
   type: pandas.ExcelDataset

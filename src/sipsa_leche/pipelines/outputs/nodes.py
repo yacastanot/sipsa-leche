@@ -241,3 +241,100 @@ def generar_cuadros_salida(
         "departamentos": len(dep_tot), "macros": len(macro_tot),
         "archivos": 3,
     }])
+
+
+# ─── Validación de calidad ────────────────────────────────────────────────────
+
+def verificar_duplicados_finca(
+    variacion_finca: pd.DataFrame,
+    finca_mes: pd.DataFrame,
+    finca_mes_anterior: pd.DataFrame,
+    mes_actual: str,
+    mes_anterior: str,
+    periodo: str,
+) -> pd.DataFrame:
+    """Verifica que IDFINCA_AUX sea único en la hoja FINCA de CUADROS_{PERI}.xlsx.
+
+    Si encuentra duplicados, cruza con las bases del mes actual y anterior
+    para identificar en cuál de las dos bases se origina cada conflicto.
+
+    Returns:
+        DataFrame vacío si no hay duplicados; de lo contrario, una fila por cada
+        registro conflictivo con columnas: IDFINCA_AUX, ORIGEN, IDFINCA,
+        DEPARTAMENTO, MUNICIPIO, FINCA, COD_DEP, COD_MUNI, T_PROD, MED_FINCA, PERIODO.
+        El resultado también se escribe en data/08_reporting/DUPLICADOS_IDFINCA_{PERI}.xlsx.
+    """
+    _COLS_REPORTE = [
+        "IDFINCA_AUX", "ORIGEN", "IDFINCA",
+        "DEPARTAMENTO", "MUNICIPIO", "FINCA",
+        "COD_DEP", "COD_MUNI",
+        "T_PROD", "MED_FINCA", "PERIODO",
+    ]
+
+    df = _preparar_finca(variacion_finca, mes_anterior, mes_actual)
+
+    if "IDFINCA_AUX" not in df.columns:
+        log.warning("verificacion_idfinca_aux_ausente", periodo=periodo)
+        return pd.DataFrame(columns=_COLS_REPORTE)
+
+    mask_dup = df["IDFINCA_AUX"].duplicated(keep=False)
+    n_dup = int(mask_dup.sum())
+
+    if n_dup == 0:
+        log.info("verificacion_idfinca_ok", periodo=periodo,
+                 fincas=len(df), duplicados=0)
+        return pd.DataFrame(columns=_COLS_REPORTE)
+
+    aux_dup: set[str] = set(df.loc[mask_dup, "IDFINCA_AUX"].dropna().unique())
+    log.warning(
+        "verificacion_idfinca_duplicados",
+        periodo=periodo,
+        n_filas_afectadas=n_dup,
+        n_valores_dup=len(aux_dup),
+        muestra=sorted(aux_dup)[:5],
+    )
+
+    def _extraer_base(base: pd.DataFrame, mes: str, origen: str) -> pd.DataFrame:
+        """Filtra las filas duplicadas de una base y normaliza columnas."""
+        sub = base[base["IDFINCA_AUX"].isin(aux_dup)].copy()
+        if sub.empty:
+            return pd.DataFrame(columns=_COLS_REPORTE)
+        prod_col = f"T_PROD_{mes}"
+        price_col = f"MED_FINCA_{mes}"
+        sub["T_PROD"] = sub[prod_col] if prod_col in sub.columns else None
+        sub["MED_FINCA"] = sub[price_col] if price_col in sub.columns else None
+        sub["ORIGEN"] = origen
+        sub["PERIODO"] = mes
+        keep = ["IDFINCA_AUX", "ORIGEN", "IDFINCA",
+                "DEPARTAMENTO", "MUNICIPIO", "FINCA",
+                "COD_DEP", "COD_MUNI", "T_PROD", "MED_FINCA", "PERIODO"]
+        return sub[[c for c in keep if c in sub.columns]]
+
+    partes = [
+        _extraer_base(finca_mes, mes_actual, "mes_actual"),
+        _extraer_base(finca_mes_anterior, mes_anterior, "mes_anterior"),
+    ]
+    reporte = pd.concat([p for p in partes if not p.empty], ignore_index=True)
+
+    # Ordenar por IDFINCA_AUX para facilitar la revisión
+    if not reporte.empty:
+        reporte = reporte.sort_values(["IDFINCA_AUX", "ORIGEN"]).reset_index(drop=True)
+
+    # Escribir Excel para inspección manual
+    out_path = Path(f"data/08_reporting/DUPLICADOS_IDFINCA_{periodo}.xlsx")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with pd.ExcelWriter(str(out_path), engine="openpyxl") as writer:
+        reporte.to_excel(writer, sheet_name="DUPLICADOS", index=False)
+        # Segunda hoja: vista consolidada desde variacion_finca
+        df_dup = df[mask_dup].reset_index(drop=True)
+        cols_vf = [c for c in [
+            "IDFINCA_AUX", "IDFINCA",
+            "DEPARTAMENTO", "MUNICIPIO", "FINCA",
+            f"T_PROD_{mes_actual}", f"T_PROD_{mes_anterior}",
+            f"MED_FINCA_{mes_actual}", f"MED_FINCA_{mes_anterior}",
+            f"VPRE_{mes_actual}{mes_anterior}", "TENDENCIA_PRECIO",
+        ] if c in df_dup.columns]
+        df_dup[cols_vf].to_excel(writer, sheet_name="VARIACION_FINCA", index=False)
+
+    log.info("duplicados_escritos", ruta=str(out_path), filas=len(reporte))
+    return reporte
