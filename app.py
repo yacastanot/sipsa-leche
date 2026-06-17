@@ -30,6 +30,7 @@ from fastapi.responses import FileResponse, HTMLResponse, Response, StreamingRes
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
+from ruamel.yaml import YAML as _YAML
 
 # ── Rutas del proyecto ────────────────────────────────────────────────────────
 
@@ -151,6 +152,88 @@ class ConfigRequest(BaseModel):
     promover_panel: bool = False
 
 
+class ConfigAdvanced(BaseModel):
+    panel_N1: float = 0.0
+    panel_D1: float = 1.0
+    panel_N2: float = 0.0
+    panel_D2: float = 1.0
+    finca_bajo_extremo: float = -0.12
+    finca_bajo_fuerte:  float = -0.07
+    finca_bajo_leve:    float = -0.05
+    finca_estable_sup:  float =  0.05
+    finca_alto_leve:    float =  0.07
+    finca_alto_fuerte:  float =  0.12
+    dep_bajo_extremo: float = -0.12
+    dep_bajo_fuerte:  float = -0.07
+    dep_bajo_leve:    float = -0.03
+    dep_estable_sup:  float =  0.03
+    dep_alto_leve:    float =  0.07
+    dep_alto_fuerte:  float =  0.12
+
+
+# ── Helpers parámetros avanzados ──────────────────────────────────────────────
+
+def _read_advanced_params() -> dict:
+    """Lee panel_ajuste y umbrales de tendencia desde parameters.yml."""
+    yml = _YAML()
+    with PARAMS_YML.open("r", encoding="utf-8") as f:
+        data = yml.load(f)
+    pa = data.get("panel_ajuste", {})
+    fm = data.get("tendencia_umbral_finca_muni", {})
+    dm = data.get("tendencia_umbral_dep_macro", {})
+    return {
+        "panel_N1": float(pa.get("N1", 0)),
+        "panel_D1": float(pa.get("D1", 1)),
+        "panel_N2": float(pa.get("N2", 0)),
+        "panel_D2": float(pa.get("D2", 1)),
+        "finca_bajo_extremo": float(fm.get("bajo_extremo", -0.12)),
+        "finca_bajo_fuerte":  float(fm.get("bajo_fuerte",  -0.07)),
+        "finca_bajo_leve":    float(fm.get("bajo_leve",    -0.05)),
+        "finca_estable_sup":  float(fm.get("estable_sup",   0.05)),
+        "finca_alto_leve":    float(fm.get("alto_leve",     0.07)),
+        "finca_alto_fuerte":  float(fm.get("alto_fuerte",   0.12)),
+        "dep_bajo_extremo": float(dm.get("bajo_extremo", -0.12)),
+        "dep_bajo_fuerte":  float(dm.get("bajo_fuerte",  -0.07)),
+        "dep_bajo_leve":    float(dm.get("bajo_leve",    -0.03)),
+        "dep_estable_sup":  float(dm.get("estable_sup",   0.03)),
+        "dep_alto_leve":    float(dm.get("alto_leve",     0.07)),
+        "dep_alto_fuerte":  float(dm.get("alto_fuerte",   0.12)),
+    }
+
+
+def _write_advanced_params(body: ConfigAdvanced) -> None:
+    """Actualiza panel_ajuste y umbrales en parameters.yml preservando comentarios."""
+    yml = _YAML()
+    yml.preserve_quotes = True
+    with PARAMS_YML.open("r", encoding="utf-8") as f:
+        data = yml.load(f)
+
+    pa = data["panel_ajuste"]
+    pa["N1"] = body.panel_N1
+    pa["D1"] = body.panel_D1
+    pa["N2"] = body.panel_N2
+    pa["D2"] = body.panel_D2
+
+    fm = data["tendencia_umbral_finca_muni"]
+    fm["bajo_extremo"] = body.finca_bajo_extremo
+    fm["bajo_fuerte"]  = body.finca_bajo_fuerte
+    fm["bajo_leve"]    = body.finca_bajo_leve
+    fm["estable_sup"]  = body.finca_estable_sup
+    fm["alto_leve"]    = body.finca_alto_leve
+    fm["alto_fuerte"]  = body.finca_alto_fuerte
+
+    dm = data["tendencia_umbral_dep_macro"]
+    dm["bajo_extremo"] = body.dep_bajo_extremo
+    dm["bajo_fuerte"]  = body.dep_bajo_fuerte
+    dm["bajo_leve"]    = body.dep_bajo_leve
+    dm["estable_sup"]  = body.dep_estable_sup
+    dm["alto_leve"]    = body.dep_alto_leve
+    dm["alto_fuerte"]  = body.dep_alto_fuerte
+
+    with PARAMS_YML.open("w", encoding="utf-8") as f:
+        yml.dump(data, f)
+
+
 # ── Rutas ─────────────────────────────────────────────────────────────────────
 
 @app.get("/favicon.ico", include_in_schema=False)
@@ -167,8 +250,7 @@ async def index(request: Request, _: str = Depends(_check_auth)) -> HTMLResponse
         anio    = int(periodo[2:])
     except ValueError:
         mes_num, anio = 1, 2026
-    return templates.TemplateResponse("index.html", {
-        "request":   request,
+    return templates.TemplateResponse(request, "index.html", {
         "config":    config,
         "mes_num":   mes_num,
         "anio":      anio,
@@ -246,6 +328,21 @@ async def configure(
         "mes_largo_anterior": mes_largo_anterior,
         "panel_promovido":   body.promover_panel,
     }
+
+
+@app.get("/config/advanced")
+async def get_advanced_config(_: str = Depends(_check_auth)) -> dict:
+    return _read_advanced_params()
+
+
+@app.post("/configure/advanced")
+async def configure_advanced(
+    body: ConfigAdvanced,
+    _: str = Depends(_check_auth),
+) -> dict:
+    """Actualiza panel_ajuste y umbrales de tendencia en parameters.yml."""
+    _write_advanced_params(body)
+    return {"ok": True, **body.model_dump()}
 
 
 @app.get("/status")

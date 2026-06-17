@@ -275,6 +275,27 @@
     }
     .output-item .btn-dl:hover { background: #047857; }
     .empty-msg { font-size: 0.82rem; color: #9ca3af; font-style: italic; }
+
+    /* Parámetros avanzados */
+    .adv-toggle { cursor: pointer; user-select: none; }
+    .adv-toggle:hover { color: #059669; }
+    .adv-body { display: none; margin-top: 1rem; }
+    .adv-body.open { display: block; }
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #6b7280;
+      margin: 1rem 0 0.5rem;
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .adv-grid   { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+    .adv-grid-6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+    .adv-field label { font-size: 0.68rem; color: #6b7280; text-transform: none; letter-spacing: 0; }
+    .adv-field input { padding: 0.4rem 0.5rem; font-size: 0.82rem; }
+    .adv-hint { font-size: 0.68rem; color: #9ca3af; margin-top: 0.2rem; font-style: italic; }
   </style>
 </head>
 <body>
@@ -364,6 +385,104 @@
     <button class="btn btn-primary btn-wide" onclick="configurar()">
       ✔ Aplicar configuración
     </button>
+  </div>
+
+  <!-- ── Parámetros avanzados (opcional) ──────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title adv-toggle" onclick="toggleAvanzado()">
+      <span>⚙</span>
+      Parámetros avanzados
+      <span id="advIcon" style="margin-left:auto; font-size:0.75rem; color:#9ca3af;">▼ Expandir</span>
+    </div>
+    <div id="advBody" class="adv-body">
+
+      <!-- Panel ajuste -->
+      <div class="section-label">Ajuste panel trimestral — N1/D1 (mes ant.) · N2/D2 (mes act.)</div>
+      <div class="adv-grid">
+        <div class="adv-field form-group">
+          <label for="pN1">N1</label>
+          <input type="number" id="pN1" step="any" value="0" />
+        </div>
+        <div class="adv-field form-group">
+          <label for="pD1">D1</label>
+          <input type="number" id="pD1" step="any" value="1" />
+        </div>
+        <div class="adv-field form-group">
+          <label for="pN2">N2</label>
+          <input type="number" id="pN2" step="any" value="0" />
+        </div>
+        <div class="adv-field form-group">
+          <label for="pD2">D2</label>
+          <input type="number" id="pD2" step="any" value="1" />
+        </div>
+      </div>
+      <p class="adv-hint">Factor de ajuste: T_PROD2 = T_PROD × (1 + N/D). Neutro: N=0, D=1.</p>
+
+      <!-- Umbrales finca/municipio -->
+      <div class="section-label">Umbrales de tendencia — Finca / Municipio</div>
+      <div class="adv-grid-6">
+        <div class="adv-field form-group">
+          <label for="fm_bx">Ext. bajo (xxx)</label>
+          <input type="number" id="fm_bx" step="0.001" value="-0.12" />
+        </div>
+        <div class="adv-field form-group">
+          <label for="fm_bf">Bajo fuerte (xx)</label>
+          <input type="number" id="fm_bf" step="0.001" value="-0.07" />
+        </div>
+        <div class="adv-field form-group">
+          <label for="fm_bl">Bajo leve (x)</label>
+          <input type="number" id="fm_bl" step="0.001" value="-0.05" />
+        </div>
+        <div class="adv-field form-group">
+          <label for="fm_es">Estable sup. (=)</label>
+          <input type="number" id="fm_es" step="0.001" value="0.05" />
+        </div>
+        <div class="adv-field form-group">
+          <label for="fm_al">Alto leve (↑)</label>
+          <input type="number" id="fm_al" step="0.001" value="0.07" />
+        </div>
+        <div class="adv-field form-group">
+          <label for="fm_af">Alto fuerte (↑↑)</label>
+          <input type="number" id="fm_af" step="0.001" value="0.12" />
+        </div>
+      </div>
+      <p class="adv-hint">Proporciones: −0.12 = −12%. Estable = [−bajo_leve, +estable_sup]. Alto ext. ≥ alto_fuerte.</p>
+
+      <!-- Umbrales depto/macro -->
+      <div class="section-label">Umbrales de tendencia — Departamento / Macrorregión</div>
+      <div class="adv-grid-6">
+        <div class="adv-field form-group">
+          <label for="dm_bx">Ext. bajo (xxx)</label>
+          <input type="number" id="dm_bx" step="0.001" value="-0.12" />
+        </div>
+        <div class="adv-field form-group">
+          <label for="dm_bf">Bajo fuerte (xx)</label>
+          <input type="number" id="dm_bf" step="0.001" value="-0.07" />
+        </div>
+        <div class="adv-field form-group">
+          <label for="dm_bl">Bajo leve (x)</label>
+          <input type="number" id="dm_bl" step="0.001" value="-0.03" />
+        </div>
+        <div class="adv-field form-group">
+          <label for="dm_es">Estable sup. (=)</label>
+          <input type="number" id="dm_es" step="0.001" value="0.03" />
+        </div>
+        <div class="adv-field form-group">
+          <label for="dm_al">Alto leve (↑)</label>
+          <input type="number" id="dm_al" step="0.001" value="0.07" />
+        </div>
+        <div class="adv-field form-group">
+          <label for="dm_af">Alto fuerte (↑↑)</label>
+          <input type="number" id="dm_af" step="0.001" value="0.12" />
+        </div>
+      </div>
+      <p class="adv-hint">Umbral leve más estricto que finca/muni (±3% vs ±5%).</p>
+
+      <div class="alert" id="advAlert"></div>
+      <button class="btn btn-secondary btn-wide" onclick="guardarAvanzado()" style="margin-top:0.75rem;">
+        ⚙ Guardar parámetros avanzados
+      </button>
+    </div>
   </div>
 
   <!-- ── PASO 3: Ejecutar pipeline ──────────────────────────────────────── -->
@@ -645,6 +764,91 @@ async function cargarOutputs() {
 
 // Inicializar
 cargarOutputs();
+cargarAvanzado();
+
+// ── Parámetros avanzados ──────────────────────────────────────────────────
+function toggleAvanzado() {
+  const body = document.getElementById('advBody');
+  const icon = document.getElementById('advIcon');
+  const open = body.classList.toggle('open');
+  icon.textContent = open ? '▲ Contraer' : '▼ Expandir';
+}
+
+async function cargarAvanzado() {
+  try {
+    const res  = await fetch('/config/advanced');
+    if (!res.ok) return;
+    const d = await res.json();
+    document.getElementById('pN1').value  = d.panel_N1;
+    document.getElementById('pD1').value  = d.panel_D1;
+    document.getElementById('pN2').value  = d.panel_N2;
+    document.getElementById('pD2').value  = d.panel_D2;
+    document.getElementById('fm_bx').value = d.finca_bajo_extremo;
+    document.getElementById('fm_bf').value = d.finca_bajo_fuerte;
+    document.getElementById('fm_bl').value = d.finca_bajo_leve;
+    document.getElementById('fm_es').value = d.finca_estable_sup;
+    document.getElementById('fm_al').value = d.finca_alto_leve;
+    document.getElementById('fm_af').value = d.finca_alto_fuerte;
+    document.getElementById('dm_bx').value = d.dep_bajo_extremo;
+    document.getElementById('dm_bf').value = d.dep_bajo_fuerte;
+    document.getElementById('dm_bl').value = d.dep_bajo_leve;
+    document.getElementById('dm_es').value = d.dep_estable_sup;
+    document.getElementById('dm_al').value = d.dep_alto_leve;
+    document.getElementById('dm_af').value = d.dep_alto_fuerte;
+  } catch(e) { /* silencioso — valores por defecto en los inputs */ }
+}
+
+async function guardarAvanzado() {
+  const v = f => parseFloat(document.getElementById(f).value);
+  const body = {
+    panel_N1: v('pN1'), panel_D1: v('pD1'), panel_N2: v('pN2'), panel_D2: v('pD2'),
+    finca_bajo_extremo: v('fm_bx'), finca_bajo_fuerte: v('fm_bf'),
+    finca_bajo_leve:    v('fm_bl'), finca_estable_sup: v('fm_es'),
+    finca_alto_leve:    v('fm_al'), finca_alto_fuerte: v('fm_af'),
+    dep_bajo_extremo: v('dm_bx'), dep_bajo_fuerte: v('dm_bf'),
+    dep_bajo_leve:    v('dm_bl'), dep_estable_sup: v('dm_es'),
+    dep_alto_leve:    v('dm_al'), dep_alto_fuerte: v('dm_af'),
+  };
+
+  // Validaciones básicas
+  if (body.finca_bajo_extremo >= body.finca_bajo_fuerte ||
+      body.finca_bajo_fuerte  >= body.finca_bajo_leve   ||
+      body.finca_bajo_leve    >= 0 ||
+      body.finca_estable_sup  <= 0 ||
+      body.finca_estable_sup  <= body.finca_bajo_leve   ||
+      body.finca_alto_leve    <= body.finca_estable_sup ||
+      body.finca_alto_fuerte  <= body.finca_alto_leve) {
+    showAlert('adv', 'error', 'Umbrales finca/muni incoherentes (deben ser: xxx < xx < x < 0 < estable_sup < ↑ < ↑↑)');
+    return;
+  }
+  if (body.dep_bajo_extremo >= body.dep_bajo_fuerte ||
+      body.dep_bajo_fuerte  >= body.dep_bajo_leve   ||
+      body.dep_bajo_leve    >= 0 ||
+      body.dep_estable_sup  <= 0 ||
+      body.dep_alto_leve    <= body.dep_estable_sup ||
+      body.dep_alto_fuerte  <= body.dep_alto_leve) {
+    showAlert('adv', 'error', 'Umbrales depto/macro incoherentes (deben ser: xxx < xx < x < 0 < estable_sup < ↑ < ↑↑)');
+    return;
+  }
+  if (body.panel_D1 === 0 || body.panel_D2 === 0) {
+    showAlert('adv', 'error', 'D1 y D2 no pueden ser cero (denominador)');
+    return;
+  }
+
+  ocultarAlert('adv');
+  try {
+    const res = await fetch('/configure/advanced', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || res.statusText);
+    showAlert('adv', 'success', '✔ Parámetros avanzados guardados en parameters.yml');
+  } catch(e) {
+    showAlert('adv', 'error', '❌ ' + e.message);
+  }
+}
 </script>
 </body>
 </html>

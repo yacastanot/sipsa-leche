@@ -52,7 +52,8 @@ dev = [
 ]
 
 [project.scripts]
-sipsa-leche = "sipsa_leche.__main__:main"
+sipsa-leche   = "sipsa_leche.__main__:main"
+sipsa-periodo = "sipsa_leche.utils.actualizar_periodo:cli"
 
 [tool.kedro]
 package_name = "sipsa_leche"

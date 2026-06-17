@@ -1,101 +1,65 @@
-# sipsa-leche
+# SIPSA Leche — Pipeline mensual de precios
 
-[![Powered by Kedro](https://img.shields.io/badge/powered_by-kedro-ffc900?logo=kedro)](https://kedro.org)
+Pipeline de automatización del operativo mensual de precios al productor de leche cruda
+del sistema SIPSA (DANE). Procesa el archivo de campo `BASE{MMYYYY}.xlsx` y produce
+cuadros de variación, tendencia y cobertura listos para publicación.
 
-## Overview
+## Inicio rápido
 
-This is your new Kedro project, which was generated using `kedro 0.19.15`.
+```bash
+# 1. Clonar y activar ambiente
+git clone <url-del-repositorio>
+cd sipsa-leche
+python -m venv .venv
+.venv\Scripts\activate          # Windows
 
-Take a look at the [Kedro documentation](https://docs.kedro.org) to get started.
-
-## Rules and guidelines
-
-In order to get the best out of the template:
-
-* Don't remove any lines from the `.gitignore` file we provide
-* Make sure your results can be reproduced by following a data engineering convention
-* Don't commit data to your repository
-* Don't commit any credentials or your local configuration to your repository. Keep all your credentials and local configuration in `conf/local/`
-
-## How to install dependencies
-
-Declare any dependencies in `requirements.txt` for `pip` installation.
-
-To install them, run:
-
-```
+# 2. Instalar dependencias
 pip install -r requirements.txt
-```
+pip install -e .
 
-## How to run your Kedro pipeline
+# 3. Configurar credenciales de la app web
+copy .env.example .env          # editar si se cambian usuario/contraseña
 
-You can run your Kedro project with:
+# 4. Configurar el mes a procesar
+sipsa-periodo --periodo 042026  # reemplazar con el período real
 
-```
+# 5. Colocar el Excel de campo en data/01_raw/
+#    Ejemplo: data/01_raw/BASE042026.xlsx
+
+# 6. Ejecutar el pipeline
 kedro run
 ```
 
-## How to test your Kedro project
+## Requisitos
 
-Have a look at the file `src/tests/test_run.py` for instructions on how to write your tests. You can run your tests as follows:
+| Componente | Versión mínima |
+|---|---|
+| Python | 3.10+ |
+| Kedro | 0.19.15 |
+| Sistema operativo | Windows 10 / Windows Server 2019+ |
+| Servidor DIMPE | Acceso a `\\DIMPE-D-065\DIMPE\SIPSA\LECHE\` |
 
-```
-pytest
-```
+## App web (opcional)
 
-You can configure the coverage threshold in your project's `pyproject.toml` file under the `[tool.coverage.report]` section.
+Para ejecutar el pipeline desde el navegador sin usar la terminal:
 
-
-## Project dependencies
-
-To see and update the dependency requirements for your project use `requirements.txt`. You can install the project requirements with `pip install -r requirements.txt`.
-
-[Further information about project dependencies](https://docs.kedro.org/en/stable/kedro_project_setup/dependencies.html#project-specific-dependencies)
-
-## How to work with Kedro and notebooks
-
-> Note: Using `kedro jupyter` or `kedro ipython` to run your notebook provides these variables in scope: `context`, 'session', `catalog`, and `pipelines`.
->
-> Jupyter, JupyterLab, and IPython are already included in the project requirements by default, so once you have run `pip install -r requirements.txt` you will not need to take any extra steps before you use them.
-
-### Jupyter
-To use Jupyter notebooks in your Kedro project, you need to install Jupyter:
-
-```
-pip install jupyter
+```bash
+iniciar_app.bat   # abre http://localhost:8001
 ```
 
-After installing Jupyter, you can start a local notebook server:
+Usuario por defecto: `sipsa` | Contraseña: `cambiar_esta_clave`
 
-```
-kedro jupyter notebook
-```
+## Estado del proyecto
 
-### JupyterLab
-To use JupyterLab, you need to install it:
+**Estable** — En producción desde el período 032026.
 
-```
-pip install jupyterlab
-```
+## Documentación completa
 
-You can also start JupyterLab:
-
-```
-kedro jupyter lab
-```
-
-### IPython
-And if you want to run an IPython session:
-
-```
-kedro ipython
-```
-
-### How to ignore notebook output cells in `git`
-To automatically strip out all output cell contents before committing to `git`, you can use tools like [`nbstripout`](https://github.com/kynan/nbstripout). For example, you can add a hook in `.git/config` with `nbstripout --install`. This will run `nbstripout` before anything is committed to `git`.
-
-> *Note:* Your output cells will be retained locally.
-
-## Package your Kedro project
-
-[Further information about building project documentation and packaging your project](https://docs.kedro.org/en/stable/tutorial/package_a_project.html)
+| Archivo | Contenido |
+|---|---|
+| [docs/01_arquitectura.md](docs/01_arquitectura.md) | Decisiones de diseño y diagrama de componentes |
+| [docs/02_instalacion.md](docs/02_instalacion.md) | Setup detallado paso a paso |
+| [docs/03_configuracion.md](docs/03_configuracion.md) | Todas las variables de configuración |
+| [docs/04_modulos.md](docs/04_modulos.md) | Qué hace cada archivo de `src/` y `utils/` |
+| [docs/05_flujo_datos.md](docs/05_flujo_datos.md) | Flujo de datos de extremo a extremo |
+| [docs/06_git.md](docs/06_git.md) | Convenciones de ramas, commits y PRs |

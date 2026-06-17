@@ -1,10 +1,31 @@
+# =============================================================================
+# SIPSA Leche — Dependencias con versiones exactas para reproducibilidad
+# Actualizar con: pip freeze | findstr <libreria>  después de pip install
+# =============================================================================
+
+# ── Framework de pipeline ─────────────────────────────────────────────────────
+kedro==0.19.15
+kedro-datasets==7.0.0
+
+# ── Procesamiento de datos ────────────────────────────────────────────────────
+pandas==2.3.3
+numpy>=1.24             # requerida por pandas
+openpyxl==3.1.5         # lectura/escritura Excel y formato de publicación
+
+# ── Configuración ─────────────────────────────────────────────────────────────
+ruamel.yaml==0.19.1     # edición YAML preservando comentarios
+
+# ── Logging estructurado ──────────────────────────────────────────────────────
+structlog==26.1.0
+
+# ── API web (app.py) ──────────────────────────────────────────────────────────
+fastapi==0.137.1
+uvicorn[standard]==0.49.0
+jinja2>=3.1             # plantillas HTML
+python-multipart==0.0.32  # formularios multipart (upload de archivos)
+pydantic==2.13.4
+
+# ── Entorno de desarrollo (no requerido en producción) ────────────────────────
 ipython>=8.10
 jupyterlab>=3.0
-kedro~=0.19.15
 notebook
-
-# API web (app.py)
-fastapi>=0.111
-uvicorn[standard]>=0.29
-jinja2>=3.1
-python-multipart>=0.0.9

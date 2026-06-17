@@ -1,7 +1,12 @@
-"""Asignación de macrorregión lechera según COD_DEP.
+"""Asignación de macrorregión lechera según el código de departamento.
 
-SAS: IF COD_DEP in ('19','52','76','86') THEN MACRO='CAUCA,NARIÑO Y VALLE DEL CAUCA '
-Fuente: MACRO LECHE.sas líneas 61-70 (%MACRO VALIDACION).
+Las cinco macrorregiones lecheras del SIPSA agrupan los 32 departamentos colombianos
+según sus patrones de producción. La asignación se define en ``parameters.yml``
+(``macroregiones``) y puede actualizarse sin tocar código.
+
+Nota: ``'CAUCA,NARIÑO Y VALLE DEL CAUCA '`` lleva un espacio al final — este
+espacio es deliberado y proviene de la fuente SAS. Modificarlo rompería la
+compatibilidad con las salidas históricas.
 """
 from __future__ import annotations
 
@@ -12,10 +17,30 @@ log = structlog.get_logger()
 
 
 def assign_macroregion(df: pd.DataFrame, macroregiones: dict) -> pd.DataFrame:
-    """Asigna columna MACRO según COD_DEP usando el dict de parameters.yml.
+    """Asigna la columna ``MACRO`` a cada fila según ``COD_DEP``.
 
-    El mapeo se invierte para vectorizar con pandas.map().
-    Registra warning si hay COD_DEP sin macrorregión asignada.
+    Invierte el diccionario ``macroregiones`` (macro → [codigos]) para crear un
+    mapeo eficiente ``cod_dep → macro`` y lo aplica con ``pandas.Series.map``.
+
+    Args:
+        df: DataFrame que contiene la columna ``COD_DEP`` (string de 2 dígitos,
+            ej. ``'05'`` para Antioquia).
+        macroregiones: Diccionario ``{nombre_macro: [cod_dep, ...]}`` proveniente
+            de ``parameters.yml['macroregiones']``.
+
+    Returns:
+        Copia del DataFrame con la columna ``MACRO`` agregada. Filas con
+        ``COD_DEP`` no mapeado reciben ``NaN`` y se registran con warning.
+
+    Raises:
+        KeyError: Si ``df`` no contiene la columna ``COD_DEP``.
+
+    Example:
+        >>> import pandas as pd
+        >>> macros = {'ZONA CAFETERA': ['05', '17'], 'RESTO': ['68', '73']}
+        >>> df = pd.DataFrame({'COD_DEP': ['05', '73', '99']})
+        >>> assign_macroregion(df, macros)['MACRO'].tolist()
+        ['ZONA CAFETERA', 'RESTO', nan]
     """
     cod_to_macro: dict[str, str] = {
         cod: macro

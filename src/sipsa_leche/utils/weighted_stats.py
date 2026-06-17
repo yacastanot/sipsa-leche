@@ -1,11 +1,14 @@
 """Estadísticas ponderadas por producción.
 
-SAS usa varianza ponderada, NO la varianza muestral estándar:
-  VAR_Y_PRECIO = PONMUNI * (PRECIOLITROS - ME_PRECIO_MUNI)^2
-  SD_PRECIO_MUNI = SQRT(SUM(VAR_Y_PRECIO))
+La varianza usada es **ponderada** (no muestral). ``pandas.std(ddof=1)`` produce
+resultados distintos y NO es equivalente a estas funciones.
 
-Esto es diferente de pandas .std(ddof=1) que usa varianza muestral.
-Ver: MACRO LECHE.sas líneas 255-257 (%MACRO CUADROS, sección MUNICIPIO).
+Equivalencia SAS (MACRO LECHE.sas, sección ``%MACRO CUADROS``)::
+
+    Y_PRECIO     = PRECIOLITROS * PONMUNI;
+    ME_PRECIO    = SUM(Y_PRECIO);           /* media ponderada */
+    VAR_Y_PRECIO = PONMUNI * (PRECIOLITROS - ME_PRECIO)**2;
+    SD_PRECIO    = SQRT(SUM(VAR_Y_PRECIO)); /* std ponderada   */
 """
 from __future__ import annotations
 
@@ -14,11 +17,20 @@ import pandas as pd
 
 
 def weighted_mean(values: pd.Series, weights: pd.Series) -> float:
-    """Media ponderada: SUM(v * w) / SUM(w).
+    """Calcula la media ponderada Σ(v × w) / Σ(w).
 
-    SAS: Y_PRECIO = PRECIOLITROS * PONMUNI; ME_PRECIO_MUNI = SUM(Y_PRECIO)
-    Nota: en SAS los pesos ya suman 1 (PONMUNI = PRODUCCION / T_PRODUCCION_MUNI),
-    por lo que SUM(Y_PRECIO) = Σ(precio_i * peso_i) directamente.
+    Args:
+        values: Serie numérica con los valores (ej. precios por litro).
+        weights: Serie de pesos no negativos (ej. ponderación de producción).
+            Los NaN se tratan como cero.
+
+    Returns:
+        Media ponderada como ``float``. Retorna ``nan`` si la suma de pesos es cero.
+
+    Example:
+        >>> import pandas as pd
+        >>> weighted_mean(pd.Series([2000, 2500, 1800]), pd.Series([0.5, 0.3, 0.2]))
+        2190.0
     """
     w = weights.fillna(0)
     total_w = w.sum()
@@ -28,14 +40,23 @@ def weighted_mean(values: pd.Series, weights: pd.Series) -> float:
 
 
 def weighted_std(values: pd.Series, weights: pd.Series) -> float:
-    """Desviación estándar ponderada por producción.
+    """Calcula la desviación estándar ponderada √Σ(w × (v − μ)²).
 
-    SAS:
-      VAR_Y_PRECIO = PONMUNI * (PRECIOLITROS - ME_PRECIO_MUNI)^2
-      SD_PRECIO_MUNI = SQRT(SUM(VAR_Y_PRECIO))
+    Esta es la raíz de la varianza ponderada, **no** la desviación estándar
+    muestral. Se usa para los niveles municipio, departamento y macrorregión.
 
-    Esta es la raíz de la varianza ponderada, NO la std muestral.
-    Se usa para MUNICIPIO, DEPARTAMENTO y MACRO.
+    Args:
+        values: Serie numérica con los valores.
+        weights: Serie de pesos no negativos. Los NaN se tratan como cero.
+
+    Returns:
+        Desviación estándar ponderada como ``float``.
+        Retorna ``nan`` si la suma de pesos es cero.
+
+    Example:
+        >>> import pandas as pd
+        >>> weighted_std(pd.Series([2000.0, 2500.0, 1800.0]), pd.Series([0.5, 0.3, 0.2]))
+        263.8...
     """
     w = weights.fillna(0)
     total_w = w.sum()
@@ -47,10 +68,23 @@ def weighted_std(values: pd.Series, weights: pd.Series) -> float:
 
 
 def weighted_var(values: pd.Series, weights: pd.Series) -> float:
-    """Varianza ponderada por producción.
+    """Calcula la varianza ponderada Σ(w × (v − μ)²).
 
-    SAS: VAR_FINCA = SUM(VARFINCA) donde VARFINCA = ((PRECIO-MED_FINCA)^2)*PONFINCA
-    Se usa a nivel finca.
+    Se usa a nivel finca. Equivale a ``VAR_FINCA = SUM(VARFINCA)`` del SAS,
+    donde ``VARFINCA = ((PRECIO - MED_FINCA)²) × PONFINCA``.
+
+    Args:
+        values: Serie numérica con los valores.
+        weights: Serie de pesos no negativos. Los NaN se tratan como cero.
+
+    Returns:
+        Varianza ponderada como ``float``.
+        Retorna ``nan`` si la suma de pesos es cero.
+
+    Example:
+        >>> import pandas as pd
+        >>> weighted_var(pd.Series([2000.0, 2500.0, 1800.0]), pd.Series([0.5, 0.3, 0.2]))
+        69600.0
     """
     w = weights.fillna(0)
     total_w = w.sum()

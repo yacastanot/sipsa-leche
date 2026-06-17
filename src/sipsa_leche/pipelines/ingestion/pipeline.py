@@ -1,7 +1,9 @@
 """Pipeline ingestion — M2: Lectura de la Encuesta de Leche Cruda en Finca.
 
 DAG:
-    base_raw_excel ──► [snapshot_raw] ──► base_peri_raw
+    base_excel_preparado ──► [snapshot_raw] ──► base_peri_raw
+
+``base_excel_preparado`` es producido por el pipeline preparation (M1).
 """
 from __future__ import annotations
 
@@ -15,7 +17,7 @@ def create_pipeline(**kwargs) -> Pipeline:
         [
             node(
                 func=snapshot_raw,
-                inputs="base_raw_excel",
+                inputs="base_excel_preparado",
                 outputs="base_peri_raw",
                 name="snapshot_raw",
                 tags=["m2", "ingestion", "bronze"],

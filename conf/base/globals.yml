@@ -1,10 +1,11 @@
 # =============================================================================
 # SIPSA LECHE — Variables globales del período (Kedro OmegaConfLoader)
 # Referenciadas en catalog.yml con ${globals:<clave>}
-# Actualizar al inicio de cada mes junto con parameters.yml
+# Actualizar con:  sipsa-periodo --periodo MMAAAA
 # =============================================================================
 
 nombre_base: "BASE032026"    # Archivo fuente sin extensión
-periodo:     "032026"        # Código MMAAAA
-mes_actual:  "MAR"           # Iniciales mes actual
+periodo: "032026"            # Código MMAAAA
+mes_actual: "MAR"            # Iniciales mes actual
 mes_anterior: "FEB"          # Iniciales mes anterior
+mes_nombre: "Marzo"          # Nombre del mes en español (minúsculas) para hoja Excel

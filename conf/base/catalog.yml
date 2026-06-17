@@ -20,6 +20,23 @@ base_raw_excel:
       PRODUCCION: str
       VENTA: str
 
+# Encabezados de columnas del mes actual — referencia para validar el próximo archivo.
+# Una fila por columna; campo "columna" con el nombre tal como aparece en la hoja.
+cabeceras_referencia:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/cabeceras_${globals:periodo}.csv
+  save_args:
+    index: false
+
+# Resumen de semanas de producción reportadas en el mes.
+# Columnas: periodo, mes, semana, fincas (fincas distintas), registros (filas en Excel).
+# Emite warning si n_semanas < 4 (mes incompleto o en curso).
+semanas_validacion:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/semanas_${globals:periodo}.csv
+  save_args:
+    index: false
+
 # Panel histórico de fincas — persiste entre meses
 # SAS: FINCA.PANEL (libname FINCA '\\DIMPE-D-065\...\PANEL\FINCA')
 panel_persistido:
@@ -228,3 +245,18 @@ excluidas_xlsx:
   filepath: data/08_reporting/Excluidas_leche.xlsx
   save_args:
     sheet_name: "Excluidas"
+
+# ─── CUENTAS NACIONALES — M11 ─────────────────────────────────────────────────
+# Intermedios en memoria entre los nodos del pipeline cuentas_nacionales
+
+# Número de semanas del operativo (int escalar)
+n_semanas_operativo:
+  type: MemoryDataset
+
+# Producción total de fincas excluidas del panel (float, litros)
+total_excluidas_mes:
+  type: MemoryDataset
+
+# Resumen de los valores calculados (dict) — para trazabilidad en logs
+leche_cruda_resumen:
+  type: MemoryDataset

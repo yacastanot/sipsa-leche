@@ -16,6 +16,8 @@ from pathlib import Path
 import pandas as pd
 import structlog
 
+from sipsa_leche.utils.excel_format import formatear_cuadros_pub, formatear_cuadros_tot
+
 log = structlog.get_logger()
 
 # ─── Selectores de columnas (equivalente a %CONSULTA SAS) ─────────────────────
@@ -209,6 +211,7 @@ def generar_cuadros_salida(
         "DEPARTAMENTO": dep_tot,
         "MACROREGION":  macro_tot,
     })
+    formatear_cuadros_tot(tot_path)
 
     # ─── CUADROS_PUB (resumen para publicación) ──────────────────────────────
     muni_pub  = _select(variacion_municipio,  _cols_muni_pub(m_ant, m_act))
@@ -222,6 +225,7 @@ def generar_cuadros_salida(
         "DEPARTAMENTO": dep_pub,
         "MACROREGION":  macro_pub,
     })
+    formatear_cuadros_pub(pub_path, m_ant, m_act)
 
     # ─── COBERTURA ───────────────────────────────────────────────────────────
     cob = _select(variacion_cobertura, _cols_cob(m_act, m_ant))
