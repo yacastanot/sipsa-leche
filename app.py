@@ -150,6 +150,7 @@ class ConfigRequest(BaseModel):
     mes_num: int
     anio: int
     promover_panel: bool = False
+    promover_m11: bool = False
 
 
 class ConfigAdvanced(BaseModel):
@@ -302,18 +303,37 @@ async def configure(
     mes_largo         = f"{largo_act} {anio}"
     mes_largo_anterior = f"{largo_ant} {anio_ant}"
 
+    old_cfg    = _read_globals()
+    old_peri   = old_cfg.get("periodo", "")
+    old_mes    = old_cfg.get("mes_actual", "")
+
     if body.promover_panel:
-        old_cfg  = _read_globals()
-        old_mes  = old_cfg.get("mes_actual", "")
         panel_src = FEATURE_DIR / f"PANEL_{old_mes}.parquet"
         panel_dst = PRIMARY_DIR / "PANEL.parquet"
         if not panel_src.exists():
             raise HTTPException(
                 404,
                 f"Panel del mes anterior no encontrado: {panel_src.name}. "
-                "Ejecuta primero el pipeline M9 (panel) para el mes actual.",
+                "Ejecuta primero el pipeline Panel trimestral para el mes actual.",
             )
         shutil.copy2(str(panel_src), str(panel_dst))
+
+    if body.promover_m11:
+        leche_src     = REPORTING_DIR / f"LECHE_CRUDA_{old_peri}.xlsx"
+        excluidas_src = REPORTING_DIR / f"Excluidas_leche_{old_peri}.xlsx"
+        errores = []
+        if not leche_src.exists():
+            errores.append(leche_src.name)
+        if not excluidas_src.exists():
+            errores.append(excluidas_src.name)
+        if errores:
+            raise HTTPException(
+                404,
+                f"Archivos de Cuentas Nacionales no encontrados: {', '.join(errores)}. "
+                "Ejecuta primero el pipeline Cuentas Nacionales para el mes actual.",
+            )
+        shutil.copy2(str(leche_src),     str(RAW_DIR / "LECHE_CRUDA_EST_BASE.xlsx"))
+        shutil.copy2(str(excluidas_src), str(RAW_DIR / "Excluidas_leche.xlsx"))
 
     _write_globals(nombre_base, periodo, abr_act, abr_ant)
     _write_parameters(nombre_base, periodo, abr_act, abr_ant, mes_largo, mes_largo_anterior)
@@ -327,6 +347,7 @@ async def configure(
         "mes_largo":         mes_largo,
         "mes_largo_anterior": mes_largo_anterior,
         "panel_promovido":   body.promover_panel,
+        "m11_promovido":     body.promover_m11,
     }
 
 
@@ -365,12 +386,16 @@ async def list_outputs(_: str = Depends(_check_auth)) -> dict:
 @app.delete("/outputs")
 async def clear_outputs(_: str = Depends(_check_auth)) -> dict:
     if not REPORTING_DIR.exists():
-        return {"deleted": 0}
+        return {"deleted": 0, "protected": 0}
     deleted = 0
+    protected = 0
     for f in REPORTING_DIR.glob("*.xlsx"):
+        if f.name.startswith("LECHE_CRUDA_") or f.name.startswith("Excluidas_leche_"):
+            protected += 1
+            continue
         f.unlink()
         deleted += 1
-    return {"deleted": deleted}
+    return {"deleted": deleted, "protected": protected}
 
 
 @app.get("/download/{filename}")

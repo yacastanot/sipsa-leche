@@ -385,6 +385,23 @@
       </div>
     </div>
 
+    <!-- Promover archivos base M11 -->
+    <div class="check-row">
+      <input type="checkbox" id="promoverM11" />
+      <div>
+        <div class="check-label">
+          <b>Actualizar archivos base de Leche Cruda para el nuevo mes</b>
+        </div>
+        <div class="check-hint">
+          El pipeline de Cuentas Nacionales (DSCN) escribe los resultados de cada mes
+          sobre una copia del archivo del mes anterior. Marcar esta opción toma los archivos
+          <em>LECHE_CRUDA</em> y <em>Excluidas_leche</em> generados en el mes que termina
+          y los deja listos como nuevos archivos base para procesar el mes nuevo.
+          <b>Requisito:</b> haber ejecutado el pipeline <em>Cuentas Nacionales</em> del mes anterior antes de cambiar el período.
+        </div>
+      </div>
+    </div>
+
     <div class="alert" id="configAlert"></div>
     <button class="btn btn-primary btn-wide" onclick="configurar()">
       ✔ Aplicar configuración
@@ -540,6 +557,9 @@
       </button>
     </div>
     <div id="limpiarMsg" style="display:none; margin-top:0.5rem; font-size:0.8rem; color:#6b7280;"></div>
+    <div style="margin-top:0.4rem; font-size:0.75rem; color:#9ca3af;">
+      Los archivos <em>LECHE_CRUDA_*</em> y <em>Excluidas_leche_*</em> no se eliminan — son insumo del mes siguiente.
+    </div>
   </div>
 
 </div>
@@ -558,6 +578,7 @@ const uploadMsg    = document.getElementById('uploadMsg');
 const mesSelect    = document.getElementById('mesSelect');
 const anioInput    = document.getElementById('anioInput');
 const promoverChk  = document.getElementById('promoverPanel');
+const promoverM11Chk = document.getElementById('promoverM11');
 const configAlert  = document.getElementById('configAlert');
 const runBtn       = document.getElementById('runBtn');
 const pipelineSelect = document.getElementById('pipelineSelect');
@@ -633,6 +654,7 @@ async function configurar() {
         mes_num,
         anio,
         promover_panel: promoverChk.checked,
+        promover_m11:   promoverM11Chk.checked,
       }),
     });
     const data = await res.json();
@@ -643,12 +665,14 @@ async function configurar() {
     document.getElementById('headerNombreBase').textContent = data.nombre_base;
 
     let msg = `✔ Configuración aplicada — ${data.mes_largo} (ant: ${data.mes_largo_anterior})`;
-    if (data.panel_promovido) msg += ' | Panel promovido ✔';
+    if (data.panel_promovido) msg += ' | Panel base actualizado ✔';
+    if (data.m11_promovido)   msg += ' | Leche Cruda base actualizada ✔';
     showAlert('config', 'success', msg);
 
     document.getElementById('step2Badge').classList.add('done');
     document.getElementById('step2Badge').textContent = '✓';
-    promoverChk.checked = false;
+    promoverChk.checked    = false;
+    promoverM11Chk.checked = false;
   } catch(e) {
     showAlert('config', 'error', '❌ ' + e.message);
   }
@@ -780,9 +804,10 @@ async function limpiarOutputs() {
   try {
     const res  = await fetch('/outputs', { method: 'DELETE' });
     const data = await res.json();
+    const prot = data.protected > 0 ? ` (${data.protected} protegido(s) conservado(s))` : '';
     msg.textContent = data.deleted > 0
-      ? `✓ Se eliminaron ${data.deleted} archivo(s).`
-      : 'No había archivos para eliminar.';
+      ? `✓ Se eliminaron ${data.deleted} archivo(s).${prot}`
+      : `No había archivos para eliminar.${prot}`;
     msg.style.display = 'block';
     cargarOutputs();
   } catch(e) {
