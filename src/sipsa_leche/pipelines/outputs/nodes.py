@@ -262,7 +262,7 @@ def verificar_duplicados_finca(
         DataFrame vacío si no hay duplicados; de lo contrario, una fila por cada
         registro conflictivo con columnas: IDFINCA_AUX, ORIGEN, IDFINCA,
         DEPARTAMENTO, MUNICIPIO, FINCA, COD_DEP, COD_MUNI, T_PROD, MED_FINCA, PERIODO.
-        El resultado también se escribe en data/08_reporting/DUPLICADOS_IDFINCA_{PERI}.xlsx.
+        Kedro persiste el resultado en data/08_reporting/DUPLICADOS_IDFINCA_{PERI}.xlsx.
     """
     _COLS_REPORTE = [
         "IDFINCA_AUX", "ORIGEN", "IDFINCA",
@@ -320,21 +320,5 @@ def verificar_duplicados_finca(
     if not reporte.empty:
         reporte = reporte.sort_values(["IDFINCA_AUX", "ORIGEN"]).reset_index(drop=True)
 
-    # Escribir Excel para inspección manual
-    out_path = Path(f"data/08_reporting/DUPLICADOS_IDFINCA_{periodo}.xlsx")
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    with pd.ExcelWriter(str(out_path), engine="openpyxl") as writer:
-        reporte.to_excel(writer, sheet_name="DUPLICADOS", index=False)
-        # Segunda hoja: vista consolidada desde variacion_finca
-        df_dup = df[mask_dup].reset_index(drop=True)
-        cols_vf = [c for c in [
-            "IDFINCA_AUX", "IDFINCA",
-            "DEPARTAMENTO", "MUNICIPIO", "FINCA",
-            f"T_PROD_{mes_actual}", f"T_PROD_{mes_anterior}",
-            f"MED_FINCA_{mes_actual}", f"MED_FINCA_{mes_anterior}",
-            f"VPRE_{mes_actual}{mes_anterior}", "TENDENCIA_PRECIO",
-        ] if c in df_dup.columns]
-        df_dup[cols_vf].to_excel(writer, sheet_name="VARIACION_FINCA", index=False)
-
-    log.info("duplicados_escritos", ruta=str(out_path), filas=len(reporte))
+    log.info("duplicados_encontrados", periodo=periodo, filas=len(reporte))
     return reporte

@@ -241,8 +241,11 @@ cuadros_log:
 
 # Duplicados de IDFINCA_AUX detectados por verificar_duplicados_finca (vacío si no hay)
 duplicados_finca:
-  type: pandas.ParquetDataset
-  filepath: data/08_reporting/DUPLICADOS_IDFINCA_${globals:periodo}.parquet
+  type: pandas.ExcelDataset
+  filepath: data/08_reporting/DUPLICADOS_IDFINCA_${globals:periodo}.xlsx
+  save_args:
+    sheet_name: DUPLICADOS
+    index: false
 
 # Excluidas_leche.xlsx — fincas excluidas del cálculo con observaciones
 excluidas_xlsx:
