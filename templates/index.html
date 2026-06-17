@@ -374,12 +374,13 @@
       <input type="checkbox" id="promoverPanel" />
       <div>
         <div class="check-label">
-          <b>Promover panel trimestral al nuevo período</b>
+          <b>Actualizar panel base para el nuevo mes</b>
         </div>
         <div class="check-hint">
-          Copia <code>PANEL_{mes_act}.parquet</code> → <code>PANEL.parquet</code>
-          para que el nuevo mes use el panel actualizado como insumo base.
-          Marcar solo al avanzar de mes (ya ejecutado M9).
+          M9 necesita saber qué fincas participaron el trimestre anterior.
+          Marcar esta opción toma el panel que se calculó en el mes que termina
+          y lo deja listo como punto de partida para el mes nuevo.
+          <b>Requisito:</b> haber ejecutado M9 del mes anterior antes de cambiar el período.
         </div>
       </div>
     </div>
