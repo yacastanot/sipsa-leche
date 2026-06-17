@@ -393,11 +393,10 @@
           <b>Actualizar archivos base de Leche Cruda para el nuevo mes</b>
         </div>
         <div class="check-hint">
-          El pipeline de Cuentas Nacionales (DSCN) escribe los resultados de cada mes
-          sobre una copia del archivo del mes anterior. Marcar esta opción toma los archivos
-          <em>LECHE_CRUDA</em> y <em>Excluidas_leche</em> generados en el mes que termina
-          y los deja listos como nuevos archivos base para procesar el mes nuevo.
-          <b>Requisito:</b> haber ejecutado el pipeline <em>Cuentas Nacionales</em> del mes anterior antes de cambiar el período.
+          El pipeline <em>Cuentas Nacionales</em> actualiza los archivos base automáticamente
+          al final de cada ejecución. Marcar esta opción solo es necesario si por algún motivo
+          la actualización automática no se realizó y se necesita forzarla manualmente.
+          <b>Requisito:</b> haber ejecutado el pipeline <em>Cuentas Nacionales</em> del mes anterior.
         </div>
       </div>
     </div>

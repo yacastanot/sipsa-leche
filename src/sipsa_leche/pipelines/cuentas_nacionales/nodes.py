@@ -359,6 +359,11 @@ def calcular_excluidas(
     wb.close()
     log.info("excluidas_guardadas", ruta=str(output_path))
 
+    # ── Promover como nuevo archivo base para el siguiente período ─────────
+    base_dst = Path(ruta_excluidas)
+    shutil.copy2(str(output_path), str(base_dst))
+    log.info("excluidas_base_actualizada", ruta=str(base_dst))
+
     return float(total_excluidas)
 
 
@@ -628,6 +633,11 @@ def generar_leche_cruda(
     wb_w.save(str(output_path))
     wb_w.close()
     log.info("leche_cruda_guardada", ruta=str(output_path))
+
+    # ── Promover como nuevo archivo base para el siguiente período ─────────
+    base_dst = Path(ruta_leche_cruda_base)
+    shutil.copy2(str(output_path), str(base_dst))
+    log.info("leche_cruda_base_actualizada", ruta=str(base_dst))
 
     return {
         "total_macro":              int(total_macro),
