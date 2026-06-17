@@ -150,6 +150,17 @@ Funciones públicas:
 
 ---
 
+## Punto de entrada del paquete (`macro_leche.py`)
+
+Re-exporta todas las funciones de nodo del proyecto para uso en notebooks o scripts externos.
+También contiene el flujo de trabajo mensual resumido y los comandos rápidos de Kedro.
+
+```python
+from sipsa_leche.macro_leche import calcular_precio_finca, generar_leche_cruda
+```
+
+---
+
 ## App web (`app.py`)
 
 API FastAPI para operar el pipeline desde el navegador.

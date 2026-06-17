@@ -184,3 +184,7 @@ htmlcov/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Archivos temporales / artefactos de desarrollo
+inspect_excel.py
+*pptx_output.txt

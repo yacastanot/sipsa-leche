@@ -58,7 +58,6 @@ Finca/Municipio usa ±5% como estable; Depto/Macro usa ±3% (más estricto).
 | `ruta_panel` | Ruta UNC a la carpeta del panel trimestral |
 | `idfinca_corrections` | Lista de 14 correcciones de IDFINCA mal registradas |
 | `macroregiones` | Mapeo departamento (COD_DEP) → macrorregión lechera |
-| `regresion_tolerancia` | Diferencia máxima aceptable en tests de regresión (0.0001) |
 
 ### Rutas Cuentas Nacionales — M11
 

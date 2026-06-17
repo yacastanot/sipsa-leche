@@ -173,67 +173,6 @@ panel_total:
   type: pandas.ParquetDataset
   filepath: data/04_feature/PANEL_TOTAL_${globals:mes_actual}.parquet
 
-# ─── REPORTES XLSX (capa de consumo) ─────────────────────────────────────────
-# SAS: %MACRO EXPORT → PROC EXPORT DBMS=XLSX
-
-# CUADROS_{PERI}_TOT.xlsx — 5 hojas: COB, FINCA, MUNICIPIO, DEPARTAMENTO, MACROREGION
-# SAS: \\DIMPE-D-065\...\SALIDAS\CUADROS_032026_TOT.xls
-cuadros_tot_finca:
-  type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${globals:periodo}_TOT.xlsx
-  save_args:
-    sheet_name: "FINCA"
-
-cuadros_tot_municipio:
-  type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${globals:periodo}_TOT.xlsx
-  save_args:
-    sheet_name: "MUNICIPIO"
-
-cuadros_tot_departamento:
-  type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${globals:periodo}_TOT.xlsx
-  save_args:
-    sheet_name: "DEPARTAMENTO"
-
-cuadros_tot_macro:
-  type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${globals:periodo}_TOT.xlsx
-  save_args:
-    sheet_name: "MACROREGION"
-
-cuadros_tot_cobertura:
-  type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${globals:periodo}_TOT.xlsx
-  save_args:
-    sheet_name: "COB"
-
-# CUADROS_{PERI}.xlsx — versión resumida para publicación
-cuadros_municipio:
-  type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${globals:periodo}.xlsx
-  save_args:
-    sheet_name: "MUNICIPIO"
-
-cuadros_departamento:
-  type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${globals:periodo}.xlsx
-  save_args:
-    sheet_name: "DEPARTAMENTO"
-
-cuadros_macro:
-  type: pandas.ExcelDataset
-  filepath: data/08_reporting/CUADROS_${globals:periodo}.xlsx
-  save_args:
-    sheet_name: "MACROREGION"
-
-# COBERTURA.xlsx — variación de cobertura entre meses
-cobertura_xlsx:
-  type: pandas.ExcelDataset
-  filepath: data/08_reporting/COBERTURA.xlsx
-  save_args:
-    sheet_name: "COB"
-
 # Registro de ejecución de M10 (trazabilidad del proceso de exportación)
 cuadros_log:
   type: pandas.ParquetDataset

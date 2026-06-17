@@ -53,19 +53,26 @@ PIPELINES Y NODOS (M1 → M10)
       construir_panel_trimestral → PANEL_{MES}.parquet
 
   outputs (M10)
-      generar_cuadros_salida → CUADROS_{PERI}_TOT.xlsx, CUADROS_{PERI}.xlsx,
-                                COBERTURA.xlsx
+      generar_cuadros_salida    → CUADROS_{PERI}_TOT.xlsx, CUADROS_{PERI}.xlsx,
+                                   COBERTURA.xlsx
+      verificar_duplicados_finca → DUPLICADOS_IDFINCA_{PERI}.xlsx (vacío si OK)
+
+  cuentas_nacionales (M11) — pipeline independiente para DSCN
+      calcular_semanas_operativo → n_semanas
+      calcular_excluidas         → Excluidas_leche_{PERI}.xlsx
+      generar_leche_cruda        → LECHE_CRUDA_{PERI}.xlsx (LECHE CRUDA + LecheDANE + trimes)
 
 ════════════════════════════════════════════════════════════════════
 COMANDOS RÁPIDOS
 ════════════════════════════════════════════════════════════════════
 
-  kedro run                           # pipeline completo (M1-M10)
-  kedro run --pipeline preparation    # M1: renombrar hoja, cabeceras, validar SEMANA
-  kedro run --pipeline ingestion      # M1+M2: preparation + snapshot bronze
-  kedro run --pipeline silver         # M1-M6: hasta precios por nivel
-  kedro run --pipeline gold_outputs   # M7-M10: variación, correlación, panel, XLSX
-  kedro run --pipeline outputs        # solo M10: regenerar cuadros XLSX
+  kedro run                                   # pipeline completo (M1-M10)
+  kedro run --pipeline preparation            # M1: renombrar hoja, cabeceras, validar SEMANA
+  kedro run --pipeline ingestion              # M1+M2: preparation + snapshot bronze
+  kedro run --pipeline silver                 # M1-M6: hasta precios por nivel
+  kedro run --pipeline gold_outputs           # M7-M10: variación, correlación, panel, XLSX
+  kedro run --pipeline outputs                # solo M10: regenerar cuadros XLSX
+  kedro run --pipeline cuentas_nacionales     # M11: Leche Cruda y Excluidas para DSCN
 """
 from __future__ import annotations
 
@@ -92,6 +99,11 @@ from sipsa_leche.pipelines.preparation.nodes import (
     guardar_cabeceras,
     preparar_hoja_excel,
     validar_semanas,
+)
+from sipsa_leche.pipelines.cuentas_nacionales.nodes import (
+    calcular_semanas_operativo,
+    calcular_excluidas,
+    generar_leche_cruda,
 )
 
 __all__ = [
@@ -122,4 +134,8 @@ __all__ = [
     "calcular_correlaciones",
     # M9 — panel (%PANEL)
     "construir_panel_trimestral",
+    # M11 — cuentas_nacionales (DSCN)
+    "calcular_semanas_operativo",
+    "calcular_excluidas",
+    "generar_leche_cruda",
 ]
