@@ -182,6 +182,9 @@
     .btn-primary:disabled { background: #9ca3af; cursor: not-allowed; transform: none; }
     .btn-secondary { background: #e5e7eb; color: #374151; }
     .btn-secondary:hover { background: #d1d5db; }
+    .btn-danger { background: #fee2e2; color: #991b1b; }
+    .btn-danger:hover { background: #fecaca; }
+    .btn-danger:disabled { background: #f3f4f6; color: #9ca3af; cursor: not-allowed; transform: none; }
     .btn-wide { width: 100%; justify-content: center; margin-top: 0.75rem; }
 
     /* Status bar */
@@ -527,11 +530,15 @@
     <div class="output-list" id="outputList">
       <span class="empty-msg">Aún no hay archivos generados.</span>
     </div>
-    <button class="btn btn-secondary"
-            style="margin-top:0.75rem; font-size:0.8rem;"
-            onclick="cargarOutputs()">
-      ↻ Actualizar lista
-    </button>
+    <div style="display:flex; gap:0.5rem; margin-top:0.75rem;">
+      <button class="btn btn-secondary" style="font-size:0.8rem;" onclick="cargarOutputs()">
+        ↻ Actualizar lista
+      </button>
+      <button class="btn btn-danger" style="font-size:0.8rem;" id="btnLimpiar" onclick="limpiarOutputs()">
+        🗑 Limpiar archivos
+      </button>
+    </div>
+    <div id="limpiarMsg" style="display:none; margin-top:0.5rem; font-size:0.8rem; color:#6b7280;"></div>
   </div>
 
 </div>
@@ -760,6 +767,30 @@ async function cargarOutputs() {
       outputList.appendChild(item);
     }
   } catch(e) { /* silencioso */ }
+}
+
+async function limpiarOutputs() {
+  const btn = document.getElementById('btnLimpiar');
+  const msg = document.getElementById('limpiarMsg');
+  if (!confirm('¿Eliminar todos los archivos Excel generados en data/08_reporting/?\nEsta acción no se puede deshacer.')) return;
+  btn.disabled = true;
+  btn.textContent = 'Eliminando…';
+  msg.style.display = 'none';
+  try {
+    const res  = await fetch('/outputs', { method: 'DELETE' });
+    const data = await res.json();
+    msg.textContent = data.deleted > 0
+      ? `✓ Se eliminaron ${data.deleted} archivo(s).`
+      : 'No había archivos para eliminar.';
+    msg.style.display = 'block';
+    cargarOutputs();
+  } catch(e) {
+    msg.textContent = 'Error al limpiar los archivos.';
+    msg.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🗑 Limpiar archivos';
+  }
 }
 
 // Inicializar

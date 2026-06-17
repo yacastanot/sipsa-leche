@@ -362,6 +362,17 @@ async def list_outputs(_: str = Depends(_check_auth)) -> dict:
     return {"files": [f.name for f in files]}
 
 
+@app.delete("/outputs")
+async def clear_outputs(_: str = Depends(_check_auth)) -> dict:
+    if not REPORTING_DIR.exists():
+        return {"deleted": 0}
+    deleted = 0
+    for f in REPORTING_DIR.glob("*.xlsx"):
+        f.unlink()
+        deleted += 1
+    return {"deleted": deleted}
+
+
 @app.get("/download/{filename}")
 async def download(filename: str, _: str = Depends(_check_auth)) -> FileResponse:
     path = (REPORTING_DIR / filename).resolve()
