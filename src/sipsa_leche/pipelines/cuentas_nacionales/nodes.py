@@ -294,29 +294,39 @@ def calcular_excluidas(
         h_cell = ws1.cell(HEADER_ROW, c_nueva_idx)
         h_cell.value = col_nueva
         _copia_estilo(ws1.cell(HEADER_ROW, c_nueva_idx - 1), h_cell)
+        prev_col_w = openpyxl.utils.get_column_letter(c_nueva_idx - 1)
+        nueva_col_w = openpyxl.utils.get_column_letter(c_nueva_idx)
+        if prev_col_w in ws1.column_dimensions:
+            ws1.column_dimensions[nueva_col_w].width = ws1.column_dimensions[prev_col_w].width
 
     # ── Escribir producción por finca ──────────────────────────────────────
     for r, prod in zip(excluded_rows, prods, strict=True):
-        ws1.cell(r, c_nueva_idx).value = int(prod) if prod is not None else None
+        cell = ws1.cell(r, c_nueva_idx)
+        cell.value = int(prod) if prod is not None else None
+        _copia_estilo(ws1.cell(r, c_nueva_idx - 1), cell)
 
     # ── Actualizar fila total ──────────────────────────────────────────────
     if row_total is not None:
-        ws1.cell(row_total, c_nueva_idx).value = int(total_excluidas)
+        cell = ws1.cell(row_total, c_nueva_idx)
+        cell.value = int(total_excluidas)
+        _copia_estilo(ws1.cell(row_total, c_nueva_idx - 1), cell)
 
     # ── Actualizar fila de referencia limpia (total + 3) ──────────────────
     # Esta fila (sin marcador en col A) almacena el total del período como
     # valor de referencia directo para el cálculo de D en LECHE_CRUDA.
     if row_total is not None:
         row_ref = row_total + 3
-        ws1.cell(row_ref, c_nueva_idx).value = int(total_excluidas)
+        cell = ws1.cell(row_ref, c_nueva_idx)
+        cell.value = int(total_excluidas)
+        _copia_estilo(ws1.cell(row_ref, c_nueva_idx - 1), cell)
 
     # ── Actualizar fila variación como fórmula ────────────────────────────
     col_letra      = openpyxl.utils.get_column_letter(c_nueva_idx)
     prev_col_letra = openpyxl.utils.get_column_letter(c_nueva_idx - 1)
     if row_total is not None and row_variacion is not None:
-        ws1.cell(row_variacion, c_nueva_idx).value = (
-            f"=({col_letra}{row_total}/{prev_col_letra}{row_total}-1)*100"
-        )
+        cell = ws1.cell(row_variacion, c_nueva_idx)
+        cell.value = f"=({col_letra}{row_total}-{prev_col_letra}{row_total})/{prev_col_letra}{row_total}"
+        _copia_estilo(ws1.cell(row_variacion, c_nueva_idx - 1), cell)
 
     # ── Actualizar salidas/entradas del panel ──────────────────────────────
     if row_salen is not None:
@@ -374,6 +384,12 @@ _MES_NUM = {
     "mayo": 5, "junio": 6, "julio": 7, "agosto": 8,
     "septiembre": 9, "octubre": 10, "noviembre": 11, "diciembre": 12,
 }
+_MES_NOMBRE = {
+    1: "enero",      2: "febrero",    3: "marzo",
+    4: "abril",      5: "mayo",       6: "junio",
+    7: "julio",      8: "agosto",     9: "septiembre",
+    10: "octubre",   11: "noviembre", 12: "diciembre",
+}
 _TRIM_MESES = {"I": [1,2,3], "II": [4,5,6], "III": [7,8,9], "IV": [10,11,12]}
 
 
@@ -384,7 +400,6 @@ def generar_leche_cruda(
     ruta_leche_cruda_base: str,
     periodo: str,
     mes_actual: str,
-    mes_nombre: str,
 ) -> dict:
     """Genera ``LECHE_CRUDA_{PERI}.xlsx`` con la fila del mes calculada.
 
@@ -403,13 +418,13 @@ def generar_leche_cruda(
             de ``Excluidas_leche_{PERI}.xlsx``; no se descuenta en columna D.
         n_semanas: Número de semanas del operativo del mes.
         ruta_leche_cruda_base: Ruta al archivo ``LECHE_CRUDA_EST_BASE.xlsx``.
-        periodo: Código MMAAAA (ej. ``'032026'``).
-        mes_actual: Iniciales del mes (ej. ``'MAR'``).
-        mes_nombre: Nombre del mes en español (ej. ``'Marzo'``).
+        periodo: Código MMAAAA (ej. ``'042026'``).
+        mes_actual: Iniciales del mes (ej. ``'ABR'``).
 
     Returns:
         Diccionario con los valores calculados para trazabilidad.
     """
+    mes_nombre = _MES_NOMBRE[int(periodo[:2])]
     # ── Cálculos fundamentales ────────────────────────────────────────────
     col_macro = f"T_PRODUCCION_MACRO{mes_actual}"
     total_macro = float(variacion_macro[col_macro].sum())
@@ -498,6 +513,8 @@ def generar_leche_cruda(
     if row_12_ago >= 3:
         _wv(8, f"=((F{new_row}-F{row_12_ago})/F{row_12_ago})*100")
     _wv(10, f"=(G{new_row}+1)*J{prev_row}", "#,##0")
+    if ws_w.row_dimensions[prev_row].height:
+        ws_w.row_dimensions[new_row].height = ws_w.row_dimensions[prev_row].height
 
     # ── Actualizar hoja LecheDANE: D como referencia cruzada, E y F como fórmulas ──
     ws_ld = wb_w["LecheDANE"]
@@ -523,9 +540,10 @@ def generar_leche_cruda(
     E_ld        = (F_rounded / D_ld_prev   - 1) if D_ld_prev   else None
     F_ld        = (F_rounded / D_ld_12_ago - 1) if D_ld_12_ago else None
 
-    ws_ld.cell(ld_row, 1).value = anio
-    ws_ld.cell(ld_row, 2).value = mes_nombre
-    ws_ld.cell(ld_row, 3).value = _trimestre(periodo)
+    for col, val in [(1, anio), (2, mes_nombre), (3, _trimestre(periodo))]:
+        cell = ws_ld.cell(ld_row, col)
+        cell.value = val
+        _copia_estilo(ws_ld.cell(ld_prev_row, col), cell)
 
     for col, formula, nf in [
         (4, f"='LECHE CRUDA'!F{new_row}",           "#,##0.00"),
@@ -537,6 +555,8 @@ def generar_leche_cruda(
         _copia_estilo(ws_ld.cell(ld_prev_row, col), cell)
         if nf:
             cell.number_format = nf
+    if ws_ld.row_dimensions[ld_prev_row].height:
+        ws_ld.row_dimensions[ld_row].height = ws_ld.row_dimensions[ld_prev_row].height
 
     log.info(
         "lecheDane_actualizada",
@@ -555,76 +575,6 @@ def generar_leche_cruda(
             LecheDANE_D_base=round(base_ld_d, 2),
             diferencia=round(F_rounded - base_ld_d, 2),
         )
-
-    # ── Actualizar hoja trimes: fórmulas SUM y variaciones ───────────────
-    ws_tr = wb_w["trimes"]
-    trim = _trimestre(periodo)
-
-    # Posición dentro del trimestre (1=primer mes, 2=segundo, 3=tercero)
-    trim_month_num = _MES_NUM.get(mes_nombre.lower(), 1)
-    quarter_pos    = ((trim_month_num - 1) % 3) + 1
-    first_ld_row   = ld_row - (quarter_pos - 1)
-
-    # Suma trimestral en Python para logs y comparación (leer meses anteriores
-    # del trimestre desde LecheDANE ANTES de que se sobreescriban)
-    quarterly_sum_py = F_rounded
-    for r in range(first_ld_row, ld_row):
-        val = _float_safe(ws_ld.cell(r, 4).value)
-        if val is not None:
-            quarterly_sum_py += val
-    meses_encontrados = quarter_pos
-
-    tr_row: int | None = None
-    tr_4_ago_row: int | None = None
-    current_year_tr: int | None = None
-
-    for r in range(1, ws_tr.max_row + 1):
-        anno_tr = ws_tr.cell(r, 1).value
-        trim_tr = ws_tr.cell(r, 2).value
-        if anno_tr is not None and isinstance(anno_tr, (int, float)):
-            current_year_tr = int(anno_tr)
-        if trim_tr == trim:
-            if current_year_tr == anio:
-                tr_row = r
-            elif current_year_tr == anio - 1:
-                tr_4_ago_row = r
-        if tr_row is not None and tr_4_ago_row is not None:
-            break
-
-    if tr_row is not None:
-        tr_prev_row = tr_row - 1
-        base_tr_d   = _float_safe(ws_tr.cell(tr_row, 4).value)
-
-        ws_tr.cell(tr_row, 3).value = meses_encontrados
-
-        sum_formula = f"=SUM(LecheDANE!D{first_ld_row}:D{ld_row})"
-        for col, formula, nf in [
-            (4, sum_formula,                                            "#,##0.00"),
-            (5, f"=(D{tr_row}/D{tr_prev_row})-1",                     "0.00%"),
-            (6, f"=(D{tr_row}/D{tr_4_ago_row})-1" if tr_4_ago_row else None, "0.00%"),
-        ]:
-            if formula is None:
-                continue
-            cell = ws_tr.cell(tr_row, col)
-            cell.value = formula
-            _copia_estilo(ws_tr.cell(tr_prev_row, col), cell)
-            if nf:
-                cell.number_format = nf
-
-        log.info(
-            "trimes_actualizado",
-            trimestre=trim, anio=anio, fila=tr_row,
-            D_formula=sum_formula,
-            quarterly_sum_calculado=round(quarterly_sum_py, 2),
-            meses=meses_encontrados,
-        )
-        if base_tr_d is not None:
-            log.info(
-                "comparacion_base_trimes",
-                trimes_D_pipeline=round(quarterly_sum_py, 2),
-                trimes_D_base=round(base_tr_d, 2),
-                diferencia=round(quarterly_sum_py - base_tr_d, 2),
-            )
 
     if hasattr(wb_w, "calculation"):
         wb_w.calculation.fullCalcOnLoad = True

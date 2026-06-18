@@ -53,7 +53,6 @@ def create_pipeline(**kwargs) -> Pipeline:
                     "params:ruta_leche_cruda_base",
                     "params:periodo",
                     "params:mes_actual",
-                    "params:mes_nombre",
                 ],
                 outputs="leche_cruda_resumen",
                 name="generar_leche_cruda",

@@ -4,8 +4,8 @@
 # Actualizar con:  sipsa-periodo --periodo MMAAAA
 # =============================================================================
 
-nombre_base: "BASE032026"    # Archivo fuente sin extensión
-periodo: "032026"            # Código MMAAAA
-mes_actual: "MAR"            # Iniciales mes actual
-mes_anterior: "FEB"          # Iniciales mes anterior
-mes_nombre: "Marzo"          # Nombre del mes en español (minúsculas) para hoja Excel
+nombre_base: "BASE042026"    # Archivo fuente sin extensión
+periodo: "042026"            # Código MMAAAA
+mes_actual: "ABR"            # Iniciales mes actual
+mes_anterior: "MAR"          # Iniciales mes anterior
+mes_nombre: "marzo"          # Nombre del mes en español (minúsculas) para hoja Excel

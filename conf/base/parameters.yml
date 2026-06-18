@@ -13,25 +13,25 @@
 #   %LET MES     = MARZO 2026;
 #   %LET BASE    = BASE032026;
 
-periodo: "032026"               # Código MMAAAA del período actual
-mes_actual: "MAR"               # Iniciales del mes actual (sufijo en tablas)
-mes_anterior: "FEB"             # Iniciales del mes anterior
-mes_largo: "MARZO 2026"         # Nombre completo para rutas de carpetas
-mes_largo_anterior: "FEBRERO 2026"
-nombre_base: "BASE032026"       # Nombre del archivo Excel de entrada (sin .xlsx)
+periodo: "042026"               # Código MMAAAA del período actual
+mes_actual: "ABR"               # Iniciales del mes actual (sufijo en tablas)
+mes_anterior: "MAR"             # Iniciales del mes anterior
+mes_largo: "ABRIL 2026"         # Nombre completo para rutas de carpetas
+mes_largo_anterior: "MARZO 2026"
+nombre_base: "BASE042026"       # Nombre del archivo Excel de entrada (sin .xlsx)
 # Nombre del mes en español, minúsculas — se usa como título de la hoja en _ok.xlsx
 # Referencia: 01→enero 02→febrero 03→marzo 04→abril 05→mayo 06→junio
 #             07→julio 08→agosto 09→septiembre 10→octubre 11→noviembre 12→diciembre
-mes_nombre: "Marzo"
+mes_nombre: "marzo"
 
 # Ajuste del panel trimestral (macro SAS %PANEL: N1,D1,N2,D2).
 # Default neutro: T_PROD2 = T_PROD. Actualizar con dias_pendientes/dias_semana
 # cuando el operativo requiera ponderar meses incompletos del trimestre.
 panel_ajuste:
-  N1: 0
-  D1: 1
-  N2: 0
-  D2: 1
+  N1: 0.0
+  D1: 1.0
+  N2: 0.0
+  D2: 1.0
 
 
 
@@ -50,20 +50,20 @@ ruta_leche_cruda_base: "data/01_raw/LECHE_CRUDA_EST_BASE.xlsx"
 
 tendencia_umbral_finca_muni:
   bajo_extremo: -0.12     # < -12%     → "xxx"
-  bajo_fuerte:  -0.07     # < -7%      → "xx"
-  bajo_leve:    -0.05     # < -5%      → "x"
-  estable_sup:   0.05     # [-5%,+5%]  → "="
-  alto_leve:     0.07     # [+5%,+7%)  → "↑"
-  alto_fuerte:   0.12     # [+7%,+12%) → "↑↑"
+  bajo_fuerte: -0.07      # < -7%      → "xx"
+  bajo_leve: -0.05        # < -5%      → "x"
+  estable_sup: 0.05       # [-5%,+5%]  → "="
+  alto_leve: 0.07         # [+5%,+7%)  → "↑"
+  alto_fuerte: 0.12       # [+7%,+12%) → "↑↑"
                           # >= +12%    → "↑↑↑"
 
 tendencia_umbral_dep_macro:
   bajo_extremo: -0.12
-  bajo_fuerte:  -0.07
-  bajo_leve:    -0.03     # Umbral más estricto que finca/muni
-  estable_sup:   0.03
-  alto_leve:     0.07
-  alto_fuerte:   0.12
+  bajo_fuerte: -0.07
+  bajo_leve: -0.03        # Umbral más estricto que finca/muni
+  estable_sup: 0.03
+  alto_leve: 0.07
+  alto_fuerte: 0.12
 
 # ─── CORRECCIONES DE IDFINCA ─────────────────────────────────────────────────
 # Fuente: MARZO_2026.sas líneas 63-77
@@ -71,48 +71,48 @@ tendencia_umbral_dep_macro:
 # Caso especial: "07.69E7" es notación científica generada por Excel.
 
 idfinca_corrections:
-  - wrong: "0508301"
-    municipio: "Belmira"
-    correct: "0508601"
-  - wrong: "0515402"
-    municipio: "El Carmen De Viboral"
-    correct: "0514802"
-  - wrong: "0086312"
-    municipio: "Sabanalarga"
-    correct: "0863812"
-  - wrong: "1756319"
-    municipio: "Salamina"
-    correct: "1765319"
-  - wrong: "1756312"
-    municipio: "Salamina"
-    correct: "1765312"
-  - wrong: "2562905"
-    municipio: "Facatativa"
-    correct: "2526905"
-  - wrong: "6919018"
-    municipio: "Cimitarra"
-    correct: "6819018"
-  - wrong: "07.69E7"
-    municipio: "Zarzal"
-    correct: "7689510"
-  - wrong: "76895010"
-    municipio: "Zarzal"
-    correct: "7689510"
-  - wrong: "76895011"
-    municipio: "Zarzal"
-    correct: "7689511"
-  - wrong: "7636510"
-    municipio: "Jamundí"
-    correct: "7636410"
-  - wrong: "0475515"
-    municipio: "Plato"
-    correct: "4755515"
-  - wrong: "0475516"
-    municipio: "Plato"
-    correct: "4755516"
-  - wrong: "0475517"
-    municipio: "Plato"
-    correct: "4755517"
+- wrong: "0508301"
+  municipio: "Belmira"
+  correct: "0508601"
+- wrong: "0515402"
+  municipio: "El Carmen De Viboral"
+  correct: "0514802"
+- wrong: "0086312"
+  municipio: "Sabanalarga"
+  correct: "0863812"
+- wrong: "1756319"
+  municipio: "Salamina"
+  correct: "1765319"
+- wrong: "1756312"
+  municipio: "Salamina"
+  correct: "1765312"
+- wrong: "2562905"
+  municipio: "Facatativa"
+  correct: "2526905"
+- wrong: "6919018"
+  municipio: "Cimitarra"
+  correct: "6819018"
+- wrong: "07.69E7"
+  municipio: "Zarzal"
+  correct: "7689510"
+- wrong: "76895010"
+  municipio: "Zarzal"
+  correct: "7689510"
+- wrong: "76895011"
+  municipio: "Zarzal"
+  correct: "7689511"
+- wrong: "7636510"
+  municipio: "Jamundí"
+  correct: "7636410"
+- wrong: "0475515"
+  municipio: "Plato"
+  correct: "4755515"
+- wrong: "0475516"
+  municipio: "Plato"
+  correct: "4755516"
+- wrong: "0475517"
+  municipio: "Plato"
+  correct: "4755517"
 
 # ─── MACRORREGIONES LECHERAS ──────────────────────────────────────────────────
 # Fuente: MACRO LECHE.sas líneas 61-70 (%MACRO VALIDACION)
@@ -120,8 +120,8 @@ idfinca_corrections:
 
 macroregiones:
   "CAUCA,NARIÑO Y VALLE DEL CAUCA ": ["19", "52", "76", "86"]
-  "ZONA CAFETERA":                    ["05", "17", "63", "66"]
-  "BOYACA Y CUNDINAMARCA":            ["15", "25"]
-  "COSTA ATLANTICA":                  ["08", "13", "20", "23", "44", "47", "70"]
-  "RESTO":                            ["85", "41", "50", "54", "68", "73", "18", "81"]
+  "ZONA CAFETERA": ["05", "17", "63", "66"]
+  "BOYACA Y CUNDINAMARCA": ["15", "25"]
+  "COSTA ATLANTICA": ["08", "13", "20", "23", "44", "47", "70"]
+  "RESTO": ["85", "41", "50", "54", "68", "73", "18", "81"]
 

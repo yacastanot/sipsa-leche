@@ -49,6 +49,30 @@ def _crear_base_leche_cruda(path: Path) -> None:
         ws.cell(row_idx, 7).value = f"=(F{row_idx}/F{max(row_idx - 1, 2)})-1"
         ws.cell(row_idx, 8).value = f"=((F{row_idx}-F2)/F2)*100"
         ws.cell(row_idx, 10).value = f"=(G{row_idx}+1)*J{max(row_idx - 1, 2)}"
+
+    # Hoja LecheDANE: espejo del histórico con valores D = 1.0 por fila
+    ws_ld = wb.create_sheet("LecheDANE")
+    ws_ld.cell(1, 1).value = "Anno"
+    ws_ld.cell(1, 2).value = "Mes"
+    ws_ld.cell(1, 3).value = "Trimestre"
+    ws_ld.cell(1, 4).value = "D"
+    for row_idx, row in enumerate(historico, start=2):
+        ws_ld.cell(row_idx, 1).value = row[0]
+        ws_ld.cell(row_idx, 2).value = row[1]
+        ws_ld.cell(row_idx, 3).value = row[2]
+        ws_ld.cell(row_idx, 4).value = 1.0
+
+    # Hoja trimes: una fila por trimestre con año y código de trimestre
+    ws_tr = wb.create_sheet("trimes")
+    trimestres = [
+        (2025, "I"), (2025, "II"), (2025, "III"), (2025, "IV"),
+        (2026, "I"),
+    ]
+    for r_idx, (anno, trim) in enumerate(trimestres, start=1):
+        ws_tr.cell(r_idx, 1).value = anno
+        ws_tr.cell(r_idx, 2).value = trim
+        ws_tr.cell(r_idx, 4).value = 1.0
+
     wb.save(path)
     wb.close()
 
@@ -77,7 +101,6 @@ def test_generar_leche_cruda_usa_total_macro_en_columna_d(tmp_path, monkeypatch)
         ruta_leche_cruda_base=str(base_path),
         periodo="032026",
         mes_actual="MAR",
-        mes_nombre="Marzo",
     )
 
     output_path = tmp_path / "data" / "08_reporting" / "LECHE_CRUDA_032026.xlsx"
@@ -85,7 +108,7 @@ def test_generar_leche_cruda_usa_total_macro_en_columna_d(tmp_path, monkeypatch)
     ws = wb["LECHE CRUDA"]
 
     assert ws.max_row == 14
-    assert ws.cell(14, 4).value == 20_731_715
+    assert ws.cell(14, 4).value == "=20731715-123"
     assert ws.cell(14, 5).value == "=31/(7*4)"
     assert ws.cell(14, 6).value == "=D14*E14"
     assert ws.cell(14, 7).value == "=(F14/F13)-1"
@@ -93,7 +116,7 @@ def test_generar_leche_cruda_usa_total_macro_en_columna_d(tmp_path, monkeypatch)
     assert ws.cell(14, 10).value == "=(G14+1)*J13"
     wb.close()
 
-    assert resumen["D_produccion_recolectada"] == 20_731_715
+    assert resumen["D_produccion_recolectada"] == 20_731_715 - 123
     assert resumen["total_excluidas"] == 123
 
 

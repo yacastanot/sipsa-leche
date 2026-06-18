@@ -385,21 +385,6 @@
       </div>
     </div>
 
-    <!-- Promover archivos base M11 -->
-    <div class="check-row">
-      <input type="checkbox" id="promoverM11" />
-      <div>
-        <div class="check-label">
-          <b>Actualizar archivos base de Leche Cruda para el nuevo mes</b>
-        </div>
-        <div class="check-hint">
-          El pipeline <em>Cuentas Nacionales</em> actualiza los archivos base automáticamente
-          al final de cada ejecución. Marcar esta opción solo es necesario si por algún motivo
-          la actualización automática no se realizó y se necesita forzarla manualmente.
-          <b>Requisito:</b> haber ejecutado el pipeline <em>Cuentas Nacionales</em> del mes anterior.
-        </div>
-      </div>
-    </div>
 
     <div class="alert" id="configAlert"></div>
     <button class="btn btn-primary btn-wide" onclick="configurar()">
@@ -577,7 +562,6 @@ const uploadMsg    = document.getElementById('uploadMsg');
 const mesSelect    = document.getElementById('mesSelect');
 const anioInput    = document.getElementById('anioInput');
 const promoverChk  = document.getElementById('promoverPanel');
-const promoverM11Chk = document.getElementById('promoverM11');
 const configAlert  = document.getElementById('configAlert');
 const runBtn       = document.getElementById('runBtn');
 const pipelineSelect = document.getElementById('pipelineSelect');
@@ -653,7 +637,6 @@ async function configurar() {
         mes_num,
         anio,
         promover_panel: promoverChk.checked,
-        promover_m11:   promoverM11Chk.checked,
       }),
     });
     const data = await res.json();
@@ -670,8 +653,7 @@ async function configurar() {
 
     document.getElementById('step2Badge').classList.add('done');
     document.getElementById('step2Badge').textContent = '✓';
-    promoverChk.checked    = false;
-    promoverM11Chk.checked = false;
+    promoverChk.checked = false;
   } catch(e) {
     showAlert('config', 'error', '❌ ' + e.message);
   }

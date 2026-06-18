@@ -150,7 +150,6 @@ class ConfigRequest(BaseModel):
     mes_num: int
     anio: int
     promover_panel: bool = False
-    promover_m11: bool = False
 
 
 class ConfigAdvanced(BaseModel):
@@ -318,23 +317,6 @@ async def configure(
             )
         shutil.copy2(str(panel_src), str(panel_dst))
 
-    if body.promover_m11:
-        leche_src     = REPORTING_DIR / f"LECHE_CRUDA_{old_peri}.xlsx"
-        excluidas_src = REPORTING_DIR / f"Excluidas_leche_{old_peri}.xlsx"
-        errores = []
-        if not leche_src.exists():
-            errores.append(leche_src.name)
-        if not excluidas_src.exists():
-            errores.append(excluidas_src.name)
-        if errores:
-            raise HTTPException(
-                404,
-                f"Archivos de Cuentas Nacionales no encontrados: {', '.join(errores)}. "
-                "Ejecuta primero el pipeline Cuentas Nacionales para el mes actual.",
-            )
-        shutil.copy2(str(leche_src),     str(RAW_DIR / "LECHE_CRUDA_EST_BASE.xlsx"))
-        shutil.copy2(str(excluidas_src), str(RAW_DIR / "Excluidas_leche.xlsx"))
-
     _write_globals(nombre_base, periodo, abr_act, abr_ant)
     _write_parameters(nombre_base, periodo, abr_act, abr_ant, mes_largo, mes_largo_anterior)
 
@@ -347,7 +329,6 @@ async def configure(
         "mes_largo":         mes_largo,
         "mes_largo_anterior": mes_largo_anterior,
         "panel_promovido":   body.promover_panel,
-        "m11_promovido":     body.promover_m11,
     }
 
 
