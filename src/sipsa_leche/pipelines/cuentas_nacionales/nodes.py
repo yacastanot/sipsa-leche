@@ -256,14 +256,17 @@ def calcular_excluidas(
             excluded_rows.append(r)
 
     # ── Calcular producción por finca excluida ─────────────────────────────
+    # prod_act_map.get() puede devolver NaN (finca presente en variacion_finca
+    # pero sin producción ese mes) además de None (finca ausente del todo).
+    # Ambos casos se tratan como "sin dato" — pd.notna() filtra los dos.
     prods: list[float | None] = [prod_act_map.get(idf) for idf in excluded_idf]
-    total_excluidas = sum(p for p in prods if p is not None)
+    total_excluidas = sum(p for p in prods if pd.notna(p))
     ant_empty = finca_df[col_ant].map(_is_empty_value)
     act_empty = finca_df[col_act].map(_is_empty_value)
     total_entran = pd.to_numeric(finca_df.loc[ant_empty, col_act], errors="coerce").sum()
     total_salen = pd.to_numeric(finca_df.loc[act_empty, col_ant], errors="coerce").sum()
 
-    n_encontradas = sum(1 for p in prods if p is not None)
+    n_encontradas = sum(1 for p in prods if pd.notna(p))
     log.info(
         "excluidas_produccion",
         col_nueva=col_nueva,
@@ -302,7 +305,7 @@ def calcular_excluidas(
     # ── Escribir producción por finca ──────────────────────────────────────
     for r, prod in zip(excluded_rows, prods, strict=True):
         cell = ws1.cell(r, c_nueva_idx)
-        cell.value = int(prod) if prod is not None else None
+        cell.value = int(prod) if pd.notna(prod) else None
         _copia_estilo(ws1.cell(r, c_nueva_idx - 1), cell)
 
     # ── Actualizar fila total ──────────────────────────────────────────────
