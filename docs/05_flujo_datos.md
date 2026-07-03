@@ -111,7 +111,8 @@ Entrada: data/01_raw/BASE{MMYYYY}.xlsx
 │                                  D=total_macro−total_excluidas (fórmula)    │
 │                                  E,F,G,H,J: fórmulas Excel                 │
 │                                  LecheDANE D: ='LECHE CRUDA'!F{fila}       │
-│                                  trimes D: =SUM(LecheDANE!D{ini}:D{fin})   │
+│                                  (hoja trimes: no se toca — actualización  │
+│                                   manual del usuario en Excel)             │
 │                                                                             │
 │  Salidas: data/08_reporting/                                                │
 │    Excluidas_leche_{PERI}.xlsx   — Panel de fincas atípicas actualizado     │

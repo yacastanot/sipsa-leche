@@ -60,7 +60,8 @@ PIPELINES Y NODOS (M1 → M10)
   cuentas_nacionales (M11) — pipeline independiente para DSCN
       calcular_semanas_operativo → n_semanas
       calcular_excluidas         → Excluidas_leche_{PERI}.xlsx
-      generar_leche_cruda        → LECHE_CRUDA_{PERI}.xlsx (LECHE CRUDA + LecheDANE + trimes)
+      generar_leche_cruda        → LECHE_CRUDA_{PERI}.xlsx (LECHE CRUDA + LecheDANE;
+                                     hoja trimes se actualiza manualmente en Excel)
 
 ════════════════════════════════════════════════════════════════════
 COMANDOS RÁPIDOS

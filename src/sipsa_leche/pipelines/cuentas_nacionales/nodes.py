@@ -412,7 +412,9 @@ def generar_leche_cruda(
       F = D×E, G = F/F_ant−1, H = (F−F_12ago)/F_12ago×100, J = (G+1)×J_ant
     - LecheDANE · D = F de LECHE CRUDA (pegado como valor),
       E = variación mensual, F = variación anual
-    - trimes · D = suma de LecheDANE del trimestre, E/F = variaciones trimestrales
+
+    La hoja ``trimes`` (tabla dinámica trimestral) no se toca — su actualización
+    queda a cargo del usuario de forma manual en Excel.
 
     Args:
         variacion_macro: DataFrame con columna ``T_PRODUCCION_MACRO{mes_actual}``.
