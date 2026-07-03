@@ -13,16 +13,16 @@
 #   %LET MES     = MARZO 2026;
 #   %LET BASE    = BASE032026;
 
-periodo: "042026"               # Código MMAAAA del período actual
-mes_actual: "ABR"               # Iniciales del mes actual (sufijo en tablas)
-mes_anterior: "MAR"             # Iniciales del mes anterior
-mes_largo: "ABRIL 2026"         # Nombre completo para rutas de carpetas
-mes_largo_anterior: "MARZO 2026"
-nombre_base: "BASE042026"       # Nombre del archivo Excel de entrada (sin .xlsx)
+periodo: "052026"               # Código MMAAAA del período actual
+mes_actual: "MAY"               # Iniciales del mes actual (sufijo en tablas)
+mes_anterior: "ABR"             # Iniciales del mes anterior
+mes_largo: "MAYO 2026"          # Nombre completo para rutas de carpetas
+mes_largo_anterior: "ABRIL 2026"
+nombre_base: "BASE052026"       # Nombre del archivo Excel de entrada (sin .xlsx)
 # Nombre del mes en español, minúsculas — se usa como título de la hoja en _ok.xlsx
 # Referencia: 01→enero 02→febrero 03→marzo 04→abril 05→mayo 06→junio
 #             07→julio 08→agosto 09→septiembre 10→octubre 11→noviembre 12→diciembre
-mes_nombre: "marzo"
+mes_nombre: "mayo"
 
 # Ajuste del panel trimestral (macro SAS %PANEL: N1,D1,N2,D2).
 # Default neutro: T_PROD2 = T_PROD. Actualizar con dias_pendientes/dias_semana
