@@ -4,7 +4,7 @@ from __future__ import annotations
 import pandera as pa
 from pandera.typing import Series
 
-TENDENCIAS_VALIDAS = ["xxx", "xx", "x", "=", "↑", "↑↑", "↑↑↑", ""]
+TENDENCIAS_VALIDAS = ["xxx", "xx", "x", "=", "°", "°°", "°°°", ""]
 
 
 class VariacionFincaSchema(pa.DataFrameModel):

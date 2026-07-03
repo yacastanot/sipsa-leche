@@ -116,9 +116,9 @@ class TestVariacionFinca:
     (-0.03, "="),    # dentro de ±5%
     ( 0.00, "="),
     ( 0.03, "="),
-    ( 0.06, "↑"),    # 5% a 7%
-    ( 0.08, "↑↑"),   # 7% a 12%
-    ( 0.15, "↑↑↑"),  # >= 12%
+    ( 0.06, "°"),    # 5% a 7%
+    ( 0.08, "°°"),   # 7% a 12%
+    ( 0.15, "°°°"),  # >= 12%
 ])
 def test_tendencia_finca_muni_umbrales(vpre, expected):
     """Act 47 + Act 50: valores en todos los rangos incluyendo límites exactos."""
@@ -138,9 +138,9 @@ def test_tendencia_finca_muni_umbrales(vpre, expected):
     (-0.01, "="),     # dentro de ±3%
     ( 0.00, "="),
     ( 0.02, "="),
-    ( 0.05, "↑"),     # 3% a 7%
-    ( 0.09, "↑↑"),    # 7% a 12%
-    ( 0.15, "↑↑↑"),   # >= 12%
+    ( 0.05, "°"),     # 3% a 7%
+    ( 0.09, "°°"),    # 7% a 12%
+    ( 0.15, "°°°"),   # >= 12%
 ])
 def test_tendencia_dep_macro_umbrales(vpre, expected):
     """Act 48 + Act 50: umbral central ±3%, diferente de finca/muni."""
@@ -227,11 +227,11 @@ class TestValoresLimiteUmbrales:
         assert out.iloc[0]["TENDENCIA_PRECIO"] == "x"
 
     def test_exactamente_mas_5_pct_finca(self):
-        """vpre exactamente = +0.05 → '↑' (primer nivel de alza)."""
+        """vpre exactamente = +0.05 → '°' (primer nivel de alza)."""
         ant = _finca(med=1000.0, mes=MES_ANT)
         act = _finca(med=1050.0)
         out = calcular_variacion_finca(act, ant, MES_A, MES_ANT, UMBRAL_FINCA_MUNI)
-        assert out.iloc[0]["TENDENCIA_PRECIO"] == "↑"
+        assert out.iloc[0]["TENDENCIA_PRECIO"] == "°"
 
     def test_justo_dentro_estable_dep(self):
         """vpre = -0.02 → '=' para departamento (claramente dentro de ±3%)."""
@@ -249,7 +249,7 @@ class TestValoresLimiteUmbrales:
         assert out.iloc[0]["TENDENCIA_PRECIO"] == "="
 
     def test_exactamente_mas_3_pct_dep(self):
-        """vpre = +0.03 → '↑' para departamento."""
+        """vpre = +0.03 → '°' para departamento."""
         dep_a = pd.DataFrame([{"DEPARTAMENTO": "A", "COD_DEP": "05",
                                 f"ME_PRECIO_DEP_{MES_A}": 1030.0,
                                 f"TPROD_DEP_{MES_A}": 100.0,
@@ -261,7 +261,7 @@ class TestValoresLimiteUmbrales:
                                   f"SDPRECIO_DEP_{MES_ANT}": 50.0,
                                   **{f"{c}_{MES_ANT}": 0.0 for c in ["MINPRECIO_DEP","MAXPRECIO_DEP","MEPROD_DEP","SDPROD_DEP","MEVACAS_DEP","TVACAS_DEP","TVENTA_DEP","MEVENTA_DEP","SDVENTA_DEP","PON_NAL"]}}])
         out = calcular_variacion_departamento(dep_a, dep_ant, MES_A, MES_ANT, UMBRAL_DEP_MACRO)
-        assert out.iloc[0]["TENDENCIA_PRECIO"] == "↑"
+        assert out.iloc[0]["TENDENCIA_PRECIO"] == "°"
 
 
 # ─── Regresión numérica vs referencia SAS ────────────────────────────────────
@@ -353,14 +353,14 @@ class TestRegressionVariacion:
         self._check_vpre(outputs["departamento"], ref["departamento"], "DEPARTAMENTO", "VPRE_FEBMAR")
 
     def test_tendencia_precio_finca_matches(self, ref, outputs):
-        _sas_to_py = {"°": "↑", "°°": "↑↑", "°°°": "↑↑↑"}
+        # Python usa la misma convención de símbolos que SAS (xxx/xx/x/=/°/°°/°°°),
+        # así que la comparación es directa, sin traducción de símbolos.
         mg = outputs["finca"].merge(
             ref["finca"][["IDFINCA","TENDENCIA_PRECIO"]].rename(columns={"TENDENCIA_PRECIO":"REF"}),
             on="IDFINCA", how="inner"
         )
-        mg["REF_NORM"] = mg["REF"].replace(_sas_to_py)
-        valid = mg["REF_NORM"].notna() & (mg["REF_NORM"] != "")
-        match = (mg.loc[valid, "TENDENCIA_PRECIO"] == mg.loc[valid, "REF_NORM"]).mean()
+        valid = mg["REF"].notna() & (mg["REF"] != "")
+        match = (mg.loc[valid, "TENDENCIA_PRECIO"] == mg.loc[valid, "REF"]).mean()
         # ~3% de diferencia esperada en valores exactamente en el borde del umbral
         # (diferencias de punto flotante SAS vs Python en ±5%/±7%/±12%)
         assert match >= 0.95, f"TENDENCIA_PRECIO match rate: {match:.2%}"

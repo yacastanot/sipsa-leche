@@ -28,7 +28,7 @@ def classify_tendency(variacion: float, umbrales: dict) -> str:
 
     Returns:
         Una de las cadenas ``'xxx'``, ``'xx'``, ``'x'``, ``'='``,
-        ``'↑'``, ``'↑↑'`` o ``'↑↑↑'``. Cadena vacía si ``variacion`` es NaN.
+        ``'°'``, ``'°°'`` o ``'°°°'``. Cadena vacía si ``variacion`` es NaN.
 
     Example:
         >>> umbrales = {'bajo_extremo': -0.12, 'bajo_fuerte': -0.07,
@@ -54,10 +54,10 @@ def classify_tendency(variacion: float, umbrales: dict) -> str:
     if variacion < u["estable_sup"]:
         return "="
     if variacion < u["alto_leve"]:
-        return "↑"
+        return "°"
     if variacion < u["alto_fuerte"]:
-        return "↑↑"
-    return "↑↑↑"
+        return "°°"
+    return "°°°"
 
 
 def apply_tendency_column(
@@ -84,7 +84,7 @@ def apply_tendency_column(
         ...             'alto_leve': 0.07, 'alto_fuerte': 0.12}
         >>> df = pd.DataFrame({'VPRE': [-0.15, 0.02, 0.10]})
         >>> apply_tendency_column(df, 'VPRE', umbrales)['TENDENCIA_PRECIO'].tolist()
-        ['xxx', '=', '↑↑']
+        ['xxx', '=', '°°']
     """
     df = df.copy()
     df[output_col] = df[variacion_col].apply(

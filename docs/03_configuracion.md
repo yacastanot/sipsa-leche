@@ -35,7 +35,7 @@ los cuatro valores permanecen en el neutro (N=0, D=1).
 
 ### Umbrales de tendencia del precio
 
-Definen los cortes para clasificar la variación en 7 categorías (xxx a ↑↑↑).
+Definen los cortes para clasificar la variación en 7 categorías (xxx a °°°).
 Finca/Municipio usa ±5% como estable; Depto/Macro usa ±3% (más estricto).
 
 | Grupo | Variable | Valor por defecto |

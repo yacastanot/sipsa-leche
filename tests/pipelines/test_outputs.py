@@ -29,7 +29,7 @@ def _var_finca():
         "MED_FINCA_MAR": 1250.0, "T_PROD_MAR": 420.0, "T_VACAS_MAR": 5.0,
         "T_VENTA_MAR": 335.0, "MIN_PRECIO_MAR": 1200.0, "MAX_PRECIO_MAR": 1300.0,
         "VAR_FINCA_MAR": 110.0, "PONMUNI_MAR": 0.5,
-        "VPRE_MARFEB": 0.0416, "VPROD_FEBMAR": 0.05, "TENDENCIA_PRECIO": "↑",
+        "VPRE_MARFEB": 0.0416, "VPROD_FEBMAR": 0.05, "TENDENCIA_PRECIO": "°",
     }])
 
 def _var_muni():
@@ -48,7 +48,7 @@ def _var_muni():
         "ME_PRODUCCION_MUNI_MAR": 510.0, "T_PRODUCCION_MUNI_MAR": 2040.0,
         "SD_PRODUCCION_MUNI_MAR": 102.0, "T_VENTA_MUNI_MAR": 1836.0,
         "PON_NACIONAL_MAR": 0.10, "PRODDEP_MAR": 10200.0, "PONDEPMUNI_MAR": 0.20,
-        "VPRE_FEBMAR": 0.0416, "VPROD_FEBMAR": 0.02, "TENDENCIA_PRECIO": "↑",
+        "VPRE_FEBMAR": 0.0416, "VPROD_FEBMAR": 0.02, "TENDENCIA_PRECIO": "°",
     }])
 
 def _var_dep():
@@ -66,7 +66,7 @@ def _var_dep():
         "MEVACAS_DEP_MAR": 25.5, "TVACAS_DEP_MAR": 102.0,
         "TVENTA_DEP_MAR": 18360.0, "MEVENTA_DEP_MAR": 459.0, "SDVENTA_DEP_MAR": 51.0,
         "PON_NAL_MAR": 0.16,
-        "VPRE_FEBMAR": 0.0416, "VPROD_FEBMAR": 0.02, "TENDENCIA_PRECIO": "↑",
+        "VPRE_FEBMAR": 0.0416, "VPROD_FEBMAR": 0.02, "TENDENCIA_PRECIO": "°",
     }])
 
 def _var_mac():
@@ -82,7 +82,7 @@ def _var_mac():
         "T_VACAS_MACROMAR": 1010.0, "ME_PRODUCCION_MACROMAR": 2020.0,
         "T_PRODUCCION_MACROMAR": 510000.0, "SD_PRODUCCION_MACROMAR": 305.0,
         "T_VENTA_MACROMAR": 459000.0, "PON_NACIONALMAR": 0.30,
-        "VPRE_FEBMAR": 0.0416, "VPROD_FEBMAR": 0.02, "TENDENCIA_PRECIO": "↑",
+        "VPRE_FEBMAR": 0.0416, "VPROD_FEBMAR": 0.02, "TENDENCIA_PRECIO": "°",
     }])
 
 def _var_cob():

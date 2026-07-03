@@ -62,7 +62,7 @@ Entrada: data/01_raw/BASE{MMYYYY}.xlsx
 │  monthly_variation →  Merge mes actual vs mes anterior                      │
 │                    →  VPRE = (precio_act - precio_ant) / precio_ant         │
 │                    →  VPROD = (prod_act - prod_ant) / prod_ant              │
-│                    →  TENDENCIA_PRECIO (xxx / xx / x / = / ↑ / ↑↑ / ↑↑↑)  │
+│                    →  TENDENCIA_PRECIO (xxx / xx / x / = / ° / °° / °°°)  │
 │                                                                             │
 │  Salidas: VAR_FINCA.parquet · VAR_MUNI.parquet                             │
 │           VAR_DEP.parquet · VAR_MACRO.parquet · VAR_COB.parquet             │

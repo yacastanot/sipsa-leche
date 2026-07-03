@@ -56,7 +56,7 @@ La herramienta `sipsa-periodo --periodo MMAAAA` actualiza ambos archivos automá
 
 ### Umbrales de tendencia configurables
 
-Los cortes `xxx / xx / x / = / ↑ / ↑↑ / ↑↑↑` del precio están en `parameters.yml`
+Los cortes `xxx / xx / x / = / ° / °° / °°°` del precio están en `parameters.yml`
 (`tendencia_umbral_finca_muni` y `tendencia_umbral_dep_macro`) y no en el código.
 Cambian con metodología sin tocar `src/`.
 

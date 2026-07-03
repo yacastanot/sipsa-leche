@@ -443,11 +443,11 @@
           <input type="number" id="fm_es" step="0.001" value="0.05" />
         </div>
         <div class="adv-field form-group">
-          <label for="fm_al">Alto leve (↑)</label>
+          <label for="fm_al">Alto leve (°)</label>
           <input type="number" id="fm_al" step="0.001" value="0.07" />
         </div>
         <div class="adv-field form-group">
-          <label for="fm_af">Alto fuerte (↑↑)</label>
+          <label for="fm_af">Alto fuerte (°°)</label>
           <input type="number" id="fm_af" step="0.001" value="0.12" />
         </div>
       </div>
@@ -473,11 +473,11 @@
           <input type="number" id="dm_es" step="0.001" value="0.03" />
         </div>
         <div class="adv-field form-group">
-          <label for="dm_al">Alto leve (↑)</label>
+          <label for="dm_al">Alto leve (°)</label>
           <input type="number" id="dm_al" step="0.001" value="0.07" />
         </div>
         <div class="adv-field form-group">
-          <label for="dm_af">Alto fuerte (↑↑)</label>
+          <label for="dm_af">Alto fuerte (°°)</label>
           <input type="number" id="dm_af" step="0.001" value="0.12" />
         </div>
       </div>
@@ -856,7 +856,7 @@ async function guardarAvanzado() {
       body.finca_estable_sup  <= body.finca_bajo_leve   ||
       body.finca_alto_leve    <= body.finca_estable_sup ||
       body.finca_alto_fuerte  <= body.finca_alto_leve) {
-    showAlert('adv', 'error', 'Umbrales finca/muni incoherentes (deben ser: xxx < xx < x < 0 < estable_sup < ↑ < ↑↑)');
+    showAlert('adv', 'error', 'Umbrales finca/muni incoherentes (deben ser: xxx < xx < x < 0 < estable_sup < ° < °°)');
     return;
   }
   if (body.dep_bajo_extremo >= body.dep_bajo_fuerte ||
@@ -865,7 +865,7 @@ async function guardarAvanzado() {
       body.dep_estable_sup  <= 0 ||
       body.dep_alto_leve    <= body.dep_estable_sup ||
       body.dep_alto_fuerte  <= body.dep_alto_leve) {
-    showAlert('adv', 'error', 'Umbrales depto/macro incoherentes (deben ser: xxx < xx < x < 0 < estable_sup < ↑ < ↑↑)');
+    showAlert('adv', 'error', 'Umbrales depto/macro incoherentes (deben ser: xxx < xx < x < 0 < estable_sup < ° < °°)');
     return;
   }
   if (body.panel_D1 === 0 || body.panel_D2 === 0) {

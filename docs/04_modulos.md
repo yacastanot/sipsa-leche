@@ -131,7 +131,7 @@ Funciones públicas:
 
 ### `tendencia.py`
 
-Clasificación de tendencia del precio en 7 niveles (xxx a ↑↑↑).
+Clasificación de tendencia del precio en 7 niveles (xxx a °°°).
 
 Funciones públicas:
 - `classify_tendency(variacion, umbrales)` — Clasifica un valor escalar
