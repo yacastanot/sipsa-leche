@@ -115,13 +115,16 @@ def _read_globals() -> dict[str, str]:
     return result
 
 
-def _write_globals(nombre_base: str, periodo: str, mes_actual: str, mes_anterior: str) -> None:
+def _write_globals(
+    nombre_base: str, periodo: str, mes_actual: str, mes_anterior: str, mes_nombre: str,
+) -> None:
     text = GLOBALS_YML.read_text(encoding="utf-8")
     for key, val in [
         ("nombre_base", nombre_base),
         ("periodo",     periodo),
         ("mes_actual",  mes_actual),
         ("mes_anterior", mes_anterior),
+        ("mes_nombre",  mes_nombre),
     ]:
         text = _set_yaml_value(text, key, val)
     GLOBALS_YML.write_text(text, encoding="utf-8")
@@ -129,7 +132,7 @@ def _write_globals(nombre_base: str, periodo: str, mes_actual: str, mes_anterior
 
 def _write_parameters(
     nombre_base: str, periodo: str, mes_actual: str, mes_anterior: str,
-    mes_largo: str, mes_largo_anterior: str,
+    mes_largo: str, mes_largo_anterior: str, mes_nombre: str,
 ) -> None:
     text = PARAMS_YML.read_text(encoding="utf-8")
     for key, val in [
@@ -139,6 +142,7 @@ def _write_parameters(
         ("mes_largo",           mes_largo),
         ("mes_largo_anterior",  mes_largo_anterior),
         ("nombre_base",         nombre_base),
+        ("mes_nombre",          mes_nombre),
     ]:
         text = _set_yaml_value(text, key, val)
     PARAMS_YML.write_text(text, encoding="utf-8")
@@ -301,6 +305,7 @@ async def configure(
     nombre_base       = f"BASE{periodo}"
     mes_largo         = f"{largo_act} {anio}"
     mes_largo_anterior = f"{largo_ant} {anio_ant}"
+    mes_nombre        = largo_act.lower()
 
     old_cfg    = _read_globals()
     old_peri   = old_cfg.get("periodo", "")
@@ -317,8 +322,10 @@ async def configure(
             )
         shutil.copy2(str(panel_src), str(panel_dst))
 
-    _write_globals(nombre_base, periodo, abr_act, abr_ant)
-    _write_parameters(nombre_base, periodo, abr_act, abr_ant, mes_largo, mes_largo_anterior)
+    _write_globals(nombre_base, periodo, abr_act, abr_ant, mes_nombre)
+    _write_parameters(
+        nombre_base, periodo, abr_act, abr_ant, mes_largo, mes_largo_anterior, mes_nombre,
+    )
 
     return {
         "ok":                True,
@@ -328,6 +335,7 @@ async def configure(
         "nombre_base":       nombre_base,
         "mes_largo":         mes_largo,
         "mes_largo_anterior": mes_largo_anterior,
+        "mes_nombre":        mes_nombre,
         "panel_promovido":   body.promover_panel,
     }
 
