@@ -8,7 +8,7 @@ y al macro %COMPARACION de MACRO LECHE.sas (líneas 398-468):
   Act 45 — VPRE finca/muni/depto/macro = (ME_actual/ME_anterior) - 1
   Act 46 — VPROD finca/muni/depto/macro = (T_PROD_actual/T_PROD_anterior) - 1
   Act 47 — TENDENCIA_PRECIO finca/muni: 7 cat, umbral central ±5%
-  Act 48 — TENDENCIA_PRECIO depto/macro: 7 cat, umbral central ±3%
+  Act 48 — TENDENCIA_PRECIO depto/macro: 7 cat, umbral central ±5% (SAS: ±3%)
   Act 49 — CV = SD_PRECIO / ME_PRECIO para municipio, departamento y macro
 
 Convención de nombres (igual que la referencia CUADROS_032026_TOT.xls):

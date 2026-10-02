@@ -46,7 +46,8 @@ ruta_leche_cruda_base: "data/01_raw/LECHE_CRUDA_EST_BASE.xlsx"
 # ─── UMBRALES DE TENDENCIA DEL PRECIO ────────────────────────────────────────
 # Fuente: MARZO_2026.sas líneas 129-191
 # Finca/Municipio → umbral leve ±5%  (líneas 129-135)
-# Depto/Macro     → umbral leve ±3%  (líneas 164-170)
+# Depto/Macro     → umbral leve ±5%  (SAS original usaba ±3%, líneas 164-170;
+#                   DANE pidió ±5% en jul-2026: neutral hasta 5%, igual que municipio)
 
 tendencia_umbral_finca_muni:
   bajo_extremo: -0.12     # < -12%     → "xxx"
@@ -60,8 +61,8 @@ tendencia_umbral_finca_muni:
 tendencia_umbral_dep_macro:
   bajo_extremo: -0.12
   bajo_fuerte: -0.07
-  bajo_leve: -0.03        # Umbral más estricto que finca/muni
-  estable_sup: 0.03
+  bajo_leve: -0.05        # < -5%      → "x"
+  estable_sup: 0.05       # [-5%,+5%]  → "="
   alto_leve: 0.07
   alto_fuerte: 0.12
 

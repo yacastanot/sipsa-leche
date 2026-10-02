@@ -1,8 +1,8 @@
 """Clasificación de tendencia del precio del litro de leche.
 
-Los umbrales difieren por nivel geográfico:
+Los umbrales se configuran por nivel geográfico:
   - Finca/Municipio → bajo_leve = ±5%
-  - Depto/Macro     → bajo_leve = ±3%  (umbral más estricto)
+  - Depto/Macro     → bajo_leve = ±5%  (el SAS usaba ±3%; DANE pidió ±5%)
 
 Los umbrales llegan desde ``parameters.yml`` (``tendencia_umbral_finca_muni``
 y ``tendencia_umbral_dep_macro``) y son configurables sin tocar código.

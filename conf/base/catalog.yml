@@ -138,13 +138,13 @@ variacion_municipio:
   type: pandas.ParquetDataset
   filepath: data/04_feature/MUNICIPIO_${globals:mes_actual}_${globals:mes_anterior}.parquet
 
-# Variación a nivel departamento (umbral ±3% para tendencia)
+# Variación a nivel departamento (umbral ±5% para tendencia)
 # SAS: Work.DEPMAR_FEB
 variacion_departamento:
   type: pandas.ParquetDataset
   filepath: data/04_feature/DEP_${globals:mes_actual}_${globals:mes_anterior}.parquet
 
-# Variación a nivel macrorregión (umbral ±3% para tendencia)
+# Variación a nivel macrorregión (umbral ±5% para tendencia)
 # SAS: Work.MACROMARFEB
 variacion_macro:
   type: pandas.ParquetDataset

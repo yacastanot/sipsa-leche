@@ -36,7 +36,8 @@ los cuatro valores permanecen en el neutro (N=0, D=1).
 ### Umbrales de tendencia del precio
 
 Definen los cortes para clasificar la variación en 7 categorías (xxx a °°°).
-Finca/Municipio usa ±5% como estable; Depto/Macro usa ±3% (más estricto).
+Todos los niveles usan ±5% como estable. El SAS original usaba ±3% en Depto/Macro;
+se cambió a ±5% por solicitud de DANE (revisión de julio 2026).
 
 | Grupo | Variable | Valor por defecto |
 |---|---|---|
@@ -46,8 +47,8 @@ Finca/Municipio usa ±5% como estable; Depto/Macro usa ±3% (más estricto).
 | | `estable_sup` | `0.05` |
 | | `alto_leve` | `0.07` |
 | | `alto_fuerte` | `0.12` |
-| `tendencia_umbral_dep_macro` | `bajo_leve` | `-0.03` |
-| | `estable_sup` | `0.03` |
+| `tendencia_umbral_dep_macro` | `bajo_leve` | `-0.05` |
+| | `estable_sup` | `0.05` |
 | | (resto igual) | — |
 
 ### Otras variables estables

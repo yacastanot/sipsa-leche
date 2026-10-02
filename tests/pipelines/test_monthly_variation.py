@@ -5,7 +5,7 @@ Cubre los 7 pasos del módulo:
   Act 45 — VPRE = (ME_actual/ME_anterior) - 1 para todos los niveles
   Act 46 — VPROD = (T_PROD_actual/T_PROD_anterior) - 1
   Act 47 — TENDENCIA_PRECIO finca/municipio (umbral ±5%)
-  Act 48 — TENDENCIA_PRECIO departamento/macro (umbral ±3%)
+  Act 48 — TENDENCIA_PRECIO departamento/macro (umbral ±5%)
   Act 49 — CV = SD_PRECIO / ME_PRECIO
   Act 50 — Valores límite exactos en los umbrales
 """
@@ -31,8 +31,8 @@ UMBRAL_FINCA_MUNI = {
     "estable_sup": 0.05, "alto_leve": 0.07, "alto_fuerte": 0.12,
 }
 UMBRAL_DEP_MACRO = {
-    "bajo_extremo": -0.12, "bajo_fuerte": -0.07, "bajo_leve": -0.03,
-    "estable_sup": 0.03, "alto_leve": 0.07, "alto_fuerte": 0.12,
+    "bajo_extremo": -0.12, "bajo_fuerte": -0.07, "bajo_leve": -0.05,
+    "estable_sup": 0.05, "alto_leve": 0.07, "alto_fuerte": 0.12,
 }
 
 
@@ -129,21 +129,21 @@ def test_tendencia_finca_muni_umbrales(vpre, expected):
     assert out.iloc[0]["TENDENCIA_PRECIO"] == expected, f"vpre={vpre} → expected {expected}"
 
 
-# ─── Act 48: TENDENCIA_PRECIO departamento/macro (umbral ±3%) ────────────────
+# ─── Act 48: TENDENCIA_PRECIO departamento/macro (umbral ±5%) ────────────────
 
 @pytest.mark.parametrize("vpre, expected", [
     (-0.15, "xxx"),   # < -12%
     (-0.10, "xx"),    # -12% a -7%
-    (-0.05, "x"),     # -7% a -3% (umbral más estricto)
-    (-0.01, "="),     # dentro de ±3%
+    (-0.06, "x"),     # -7% a -5%
+    (-0.01, "="),     # dentro de ±5%
     ( 0.00, "="),
-    ( 0.02, "="),
-    ( 0.05, "°"),     # 3% a 7%
+    ( 0.033, "="),    # caso Tolima jul-2026: +3.30% es neutral
+    ( 0.06, "°"),     # 5% a 7%
     ( 0.09, "°°"),    # 7% a 12%
     ( 0.15, "°°°"),   # >= 12%
 ])
 def test_tendencia_dep_macro_umbrales(vpre, expected):
-    """Act 48 + Act 50: umbral central ±3%, diferente de finca/muni."""
+    """Act 48 + Act 50: umbral central ±5%, igual que finca/muni."""
     dep_a = pd.DataFrame([{"DEPARTAMENTO": "Antioquia", "COD_DEP": "05",
                             f"ME_PRECIO_DEP_{MES_A}": 1000.0 * (1 + vpre),
                             f"TPROD_DEP_{MES_A}": 100.0,
@@ -234,7 +234,7 @@ class TestValoresLimiteUmbrales:
         assert out.iloc[0]["TENDENCIA_PRECIO"] == "°"
 
     def test_justo_dentro_estable_dep(self):
-        """vpre = -0.02 → '=' para departamento (claramente dentro de ±3%)."""
+        """vpre = -0.02 → '=' para departamento (claramente dentro de ±5%)."""
         dep_a = pd.DataFrame([{"DEPARTAMENTO": "A", "COD_DEP": "05",
                                 f"ME_PRECIO_DEP_{MES_A}": 980.0,  # -2% → "="
                                 f"TPROD_DEP_{MES_A}": 100.0,
@@ -248,10 +248,10 @@ class TestValoresLimiteUmbrales:
         out = calcular_variacion_departamento(dep_a, dep_ant, MES_A, MES_ANT, UMBRAL_DEP_MACRO)
         assert out.iloc[0]["TENDENCIA_PRECIO"] == "="
 
-    def test_exactamente_mas_3_pct_dep(self):
-        """vpre = +0.03 → '°' para departamento."""
+    def test_exactamente_mas_5_pct_dep(self):
+        """vpre = +0.05 → '°' para departamento."""
         dep_a = pd.DataFrame([{"DEPARTAMENTO": "A", "COD_DEP": "05",
-                                f"ME_PRECIO_DEP_{MES_A}": 1030.0,
+                                f"ME_PRECIO_DEP_{MES_A}": 1050.0,
                                 f"TPROD_DEP_{MES_A}": 100.0,
                                 f"SDPRECIO_DEP_{MES_A}": 50.0,
                                 **{f"{c}_{MES_A}": 0.0 for c in ["MINPRECIO_DEP","MAXPRECIO_DEP","MEPROD_DEP","SDPROD_DEP","MEVACAS_DEP","TVACAS_DEP","TVENTA_DEP","MEVENTA_DEP","SDVENTA_DEP","PON_NAL"]}}])

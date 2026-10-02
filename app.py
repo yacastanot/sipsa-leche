@@ -169,8 +169,8 @@ class ConfigAdvanced(BaseModel):
     finca_alto_fuerte:  float =  0.12
     dep_bajo_extremo: float = -0.12
     dep_bajo_fuerte:  float = -0.07
-    dep_bajo_leve:    float = -0.03
-    dep_estable_sup:  float =  0.03
+    dep_bajo_leve:    float = -0.05
+    dep_estable_sup:  float =  0.05
     dep_alto_leve:    float =  0.07
     dep_alto_fuerte:  float =  0.12
 
@@ -198,8 +198,8 @@ def _read_advanced_params() -> dict:
         "finca_alto_fuerte":  float(fm.get("alto_fuerte",   0.12)),
         "dep_bajo_extremo": float(dm.get("bajo_extremo", -0.12)),
         "dep_bajo_fuerte":  float(dm.get("bajo_fuerte",  -0.07)),
-        "dep_bajo_leve":    float(dm.get("bajo_leve",    -0.03)),
-        "dep_estable_sup":  float(dm.get("estable_sup",   0.03)),
+        "dep_bajo_leve":    float(dm.get("bajo_leve",    -0.05)),
+        "dep_estable_sup":  float(dm.get("estable_sup",   0.05)),
         "dep_alto_leve":    float(dm.get("alto_leve",     0.07)),
         "dep_alto_fuerte":  float(dm.get("alto_fuerte",   0.12)),
     }
