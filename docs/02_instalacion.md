@@ -36,16 +36,7 @@ pip install -e .
 El flag `-e .` instala el paquete `sipsa_leche` en modo editable y registra los
 comandos `sipsa-leche` y `sipsa-periodo` en el PATH del ambiente.
 
-### 4. Configurar credenciales de la app web
-
-```bash
-copy .env.example .env
-```
-
-Editar `.env` si se quieren cambiar el usuario y contraseña de la app web.
-El archivo `.env` **no debe subirse a Codeversion** (ya está en `.gitignore`).
-
-### 5. Verificar la instalación
+### 4. Verificar la instalación
 
 ```bash
 kedro info
@@ -77,7 +68,8 @@ Para operar desde el navegador en lugar de la terminal:
 iniciar_app.bat
 ```
 
-Navegar a `http://localhost:8001`. Las credenciales por defecto están en `.env`.
+Navegar a `http://localhost:8001`. La app no pide usuario ni contraseña: exponer el
+servidor solo en una red de confianza.
 
 ## Actualización de dependencias
 

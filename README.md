@@ -17,16 +17,13 @@ python -m venv .venv
 pip install -r requirements.txt
 pip install -e .
 
-# 3. Configurar credenciales de la app web
-copy .env.example .env          # editar si se cambian usuario/contraseña
-
-# 4. Configurar el mes a procesar
+# 3. Configurar el mes a procesar
 sipsa-periodo --periodo 042026  # reemplazar con el período real
 
-# 5. Colocar el Excel de campo en data/01_raw/
+# 4. Colocar el Excel de campo en data/01_raw/
 #    Ejemplo: data/01_raw/BASE042026.xlsx
 
-# 6. Ejecutar el pipeline
+# 5. Ejecutar el pipeline
 kedro run
 ```
 
@@ -47,7 +44,7 @@ Para ejecutar el pipeline desde el navegador sin usar la terminal:
 iniciar_app.bat   # abre http://localhost:8001
 ```
 
-Usuario por defecto: `sipsa` | Contraseña: `cambiar_esta_clave`
+La app no pide usuario ni contraseña: exponer el servidor solo en una red de confianza.
 
 ## Estado del proyecto
 

@@ -1,6 +1,6 @@
 # 03 · Configuración
 
-El proyecto tiene tres fuentes de configuración con responsabilidades distintas.
+El proyecto tiene dos fuentes de configuración con responsabilidades distintas.
 
 ## 1. `conf/base/parameters.yml` — Parámetros del pipeline
 
@@ -89,15 +89,3 @@ los archivos del catálogo Kedro (`${globals:nombre_base}`, etc.).
 | `mes_anterior` | Iniciales mes anterior |
 | `mes_nombre` | Nombre del mes en minúsculas |
 
----
-
-## 3. `.env` — Credenciales de la app web
-
-Nunca subir a Codeversion. Copiar desde `.env.example` y editar localmente.
-
-| Variable | Por defecto | Descripción |
-|---|---|---|
-| `LECHE_USER` | `sipsa` | Usuario para autenticación HTTP Basic |
-| `LECHE_PASS` | `cambiar_esta_clave` | Contraseña de la app web |
-
-La app lee estas variables al iniciar. Cambiarlas requiere reiniciar `uvicorn`.

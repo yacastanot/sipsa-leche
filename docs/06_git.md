@@ -90,7 +90,7 @@ Este comando solo modifica `conf/base/parameters.yml` y `conf/base/globals.yml`.
 Estos elementos están en `.gitignore` y **nunca deben subirse**:
 
 - `data/` — Los datos del operativo son sensibles y voluminosos
-- `.env` — Credenciales de la app web
+- `.env` — Variables de entorno locales
 - `.venv/` — El ambiente virtual se recrea desde `requirements.txt`
 - `__pycache__/` y archivos `.pyc`
 - Archivos `.xlsx` de salida (van en el servidor de reportes)

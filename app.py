@@ -7,17 +7,12 @@ Equivalente funcional a la app del SIPSA precios, adaptada al proceso mensual:
   - Ejecución de pipelines individuales o el completo (M2–M10)
   - Streaming de logs vía Server-Sent Events
   - Descarga de los XLSX de salida
-
-Credenciales: variables de entorno LECHE_USER / LECHE_PASS
-  (por defecto: sipsa / cambiar_esta_clave)
 """
 from __future__ import annotations
 
 import asyncio
-import os
 import queue
 import re
-import secrets
 import shutil
 import subprocess
 import sys
@@ -25,9 +20,8 @@ import threading
 from pathlib import Path
 from typing import Optional
 
-from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, Response, StreamingResponse
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from ruamel.yaml import YAML as _YAML
@@ -73,25 +67,8 @@ PIPELINES: list[tuple[str, str]] = [
 
 app = FastAPI(title="SIPSA Leche Pipeline", docs_url=None, redoc_url=None)
 templates = Jinja2Templates(directory=str(PROJECT_ROOT / "templates"))
-security = HTTPBasic()
 
 _pipeline_running = False
-
-
-# ── Autenticación ─────────────────────────────────────────────────────────────
-
-def _check_auth(credentials: HTTPBasicCredentials = Depends(security)) -> str:
-    expected_user = os.environ.get("LECHE_USER", "sipsa")
-    expected_pass = os.environ.get("LECHE_PASS", "cambiar_esta_clave")
-    user_ok = secrets.compare_digest(credentials.username.encode(), expected_user.encode())
-    pass_ok = secrets.compare_digest(credentials.password.encode(), expected_pass.encode())
-    if not (user_ok and pass_ok):
-        raise HTTPException(
-            status_code=401,
-            detail="Credenciales incorrectas",
-            headers={"WWW-Authenticate": "Basic"},
-        )
-    return credentials.username
 
 
 # ── Helpers YAML ──────────────────────────────────────────────────────────────
@@ -246,7 +223,7 @@ async def favicon() -> Response:
 
 
 @app.get("/", response_class=HTMLResponse)
-async def index(request: Request, _: str = Depends(_check_auth)) -> HTMLResponse:
+async def index(request: Request) -> HTMLResponse:
     config = _read_globals()
     periodo = config.get("periodo", "012026")
     try:
@@ -263,14 +240,13 @@ async def index(request: Request, _: str = Depends(_check_auth)) -> HTMLResponse
 
 
 @app.get("/config")
-async def get_config(_: str = Depends(_check_auth)) -> dict:
+async def get_config() -> dict:
     return _read_globals()
 
 
 @app.post("/upload")
 async def upload_file(
     file: UploadFile = File(...),
-    _: str = Depends(_check_auth),
 ) -> dict:
     if not file.filename.lower().endswith((".xlsx", ".xls")):
         raise HTTPException(400, "Solo se aceptan archivos Excel (.xlsx, .xls)")
@@ -284,7 +260,6 @@ async def upload_file(
 @app.post("/configure")
 async def configure(
     body: ConfigRequest,
-    _: str = Depends(_check_auth),
 ) -> dict:
     """Actualiza globals.yml y parameters.yml con los nuevos valores de período."""
     mes_num = body.mes_num
@@ -341,14 +316,13 @@ async def configure(
 
 
 @app.get("/config/advanced")
-async def get_advanced_config(_: str = Depends(_check_auth)) -> dict:
+async def get_advanced_config() -> dict:
     return _read_advanced_params()
 
 
 @app.post("/configure/advanced")
 async def configure_advanced(
     body: ConfigAdvanced,
-    _: str = Depends(_check_auth),
 ) -> dict:
     """Actualiza panel_ajuste y umbrales de tendencia en parameters.yml."""
     _write_advanced_params(body)
@@ -356,12 +330,12 @@ async def configure_advanced(
 
 
 @app.get("/status")
-async def status(_: str = Depends(_check_auth)) -> dict:
+async def status() -> dict:
     return {"running": _pipeline_running}
 
 
 @app.get("/outputs")
-async def list_outputs(_: str = Depends(_check_auth)) -> dict:
+async def list_outputs() -> dict:
     if not REPORTING_DIR.exists():
         return {"files": []}
     files = sorted(
@@ -373,7 +347,7 @@ async def list_outputs(_: str = Depends(_check_auth)) -> dict:
 
 
 @app.delete("/outputs")
-async def clear_outputs(_: str = Depends(_check_auth)) -> dict:
+async def clear_outputs() -> dict:
     if not REPORTING_DIR.exists():
         return {"deleted": 0, "protected": 0}
     deleted = 0
@@ -388,7 +362,7 @@ async def clear_outputs(_: str = Depends(_check_auth)) -> dict:
 
 
 @app.get("/download/{filename}")
-async def download(filename: str, _: str = Depends(_check_auth)) -> FileResponse:
+async def download(filename: str) -> FileResponse:
     path = (REPORTING_DIR / filename).resolve()
     if not str(path).startswith(str(REPORTING_DIR.resolve())):
         raise HTTPException(403, "Acceso denegado")
@@ -404,7 +378,6 @@ async def download(filename: str, _: str = Depends(_check_auth)) -> FileResponse
 @app.post("/run")
 async def run_pipeline(
     pipeline_name: str = Form("__default__"),
-    _: str = Depends(_check_auth),
 ) -> StreamingResponse:
     global _pipeline_running
     if _pipeline_running:
