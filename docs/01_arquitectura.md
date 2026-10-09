@@ -38,7 +38,7 @@ BASE{MMYYYY}.xlsx
 
 | Tecnología | Razón |
 |---|---|
-| **Kedro 0.19.15** | Trazabilidad de datos, catálogo declarativo, pipelines modulares |
+| **Kedro 1.7** | Trazabilidad de datos, catálogo declarativo, pipelines modulares |
 | **pandas** | Equivalente vectorizado a las macros SAS de agregación |
 | **openpyxl** | Formato de publicación (celdas combinadas, ancho de columnas, hoja oculta) |
 | **ruamel.yaml** | Edición de YAML preservando comentarios en `parameters.yml` |

@@ -34,8 +34,8 @@ kedro run
 
 | Componente | Versión mínima |
 |---|---|
-| Python | 3.10+ |
-| Kedro | 0.19.15 |
+| Python | 3.14 (mínimo 3.10) |
+| Kedro | 1.7 |
 | Sistema operativo | Windows 10 / Windows Server 2019+ |
 | Servidor DIMPE | Acceso a `\\DIMPE-D-065\DIMPE\SIPSA\LECHE\` |
 

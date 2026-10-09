@@ -2,7 +2,7 @@
 
 ## Requisitos del sistema
 
-- Python 3.10 o superior
+- Python 3.14 (recomendado; mínimo 3.10)
 - Windows 10 Pro / Windows Server 2019+
 - Acceso de red a `\\DIMPE-D-065\DIMPE\SIPSA\LECHE\` (solo para panel trimestral)
 - Git (para control de versiones)

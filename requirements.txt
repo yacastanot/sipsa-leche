@@ -1,11 +1,11 @@
 # =============================================================================
-# SIPSA Leche — Dependencias con versiones exactas para reproducibilidad
+# SIPSA Leche — Dependencias con versiones exactas para reproducibilidad (Python 3.14)
 # Actualizar con: pip freeze | findstr <libreria>  después de pip install
 # =============================================================================
 
 # ── Framework de pipeline ─────────────────────────────────────────────────────
-kedro==0.19.15
-kedro-datasets==7.0.0
+kedro==1.7.0
+kedro-datasets==9.6.0
 
 # ── Procesamiento de datos ────────────────────────────────────────────────────
 pandas==2.3.3
@@ -19,11 +19,11 @@ ruamel.yaml==0.19.1     # edición YAML preservando comentarios
 structlog==26.1.0
 
 # ── API web (app.py) ──────────────────────────────────────────────────────────
-fastapi==0.137.1
-uvicorn[standard]==0.49.0
+fastapi==0.143.0
+uvicorn[standard]==0.54.0
 jinja2>=3.1             # plantillas HTML
 python-multipart==0.0.32  # formularios multipart (upload de archivos)
-pydantic==2.13.4
+pydantic==2.14.0
 
 # ── Entorno de desarrollo (no requerido en producción) ────────────────────────
 ipython>=8.10
