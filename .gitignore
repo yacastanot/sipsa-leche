@@ -188,3 +188,6 @@ htmlcov/
 # Archivos temporales / artefactos de desarrollo
 inspect_excel.py
 *pptx_output.txt
+
+# Manuales de usuario (binarios pesados, se distribuyen fuera del repo)
+docs/*Manual_Usuario*.pptx
